@@ -8,14 +8,14 @@
 <body>
 <div class="login-container">
     <div class="login-box">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 50px;">
-        <h2>Photographer Login</h2>
+        <div class="logo-title">
+            <img src="{{ asset('images/logo.jpg') }}" alt="Logo">
+            <h2>Photographer Login</h2>
+        </div>
         <p>Welcome back!<br>Enter your Credentials to access your account</p>
-        
+
         @if($errors->any())
-            <div style="color: red; margin-bottom: 10px;">
-                {{ $errors->first() }}
-            </div>
+            <div class="error-message">{{ $errors->first() }}</div>
         @endif
 
         <form method="POST" action="#">
@@ -26,12 +26,12 @@
             <label>Password</label>
             <input type="password" name="password" placeholder="Enter Password" required>
 
-            <a href="#" style="font-size: 13px;">forgot password</a>
+            <a href="#" class="forgot-link">forgot password</a>
 
-            <button type="submit">LOGIN</button>
+            <button type="submit" class="login-btn">LOGIN</button>
         </form>
 
-        <div style="margin: 20px 0; text-align: center;">Or</div>
+        <div class="divider">Or</div>
 
         <div class="google-btn">
             <img src="https://img.icons8.com/color/48/000000/google-logo.png" />
