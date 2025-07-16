@@ -1,0 +1,79 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url('/images/login-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.login-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100vh;
+    padding-right: 60px;
+}
+
+.login-box {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    width: 350px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.login-box h2 {
+    margin-top: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.login-box .google-btn {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-box .google-btn img {
+    height: 20px;
+    margin-right: 10px;
+}
+
+.login-box .links {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login-box .links a {
+    color: red;
+    text-decoration: none;
+    font-weight: bold;
+}
