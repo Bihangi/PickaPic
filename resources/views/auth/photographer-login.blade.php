@@ -5,16 +5,20 @@
     <title>Photographer Login</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-cover bg-center min-h-screen flex items-center justify-end p-10" style="background-image: url('{{ Vite::asset('resources/images/login-bg.jpg') }}');">
+<body class="relative min-h-screen flex items-center justify-end p-10 overflow-hidden">
 
-    <div class="bg-white p-8 rounded-2xl w-full max-w-md shadow-lg mt-[-20px]">
+    <div class="absolute inset-0 bg-cover bg-center blur-m brightness-75 z-0"
+         style="background-image: url('{{ Vite::asset('resources/images/login-bg.jpg') }}');">
+    </div>
+
+    <div class="relative z-10 bg-white p-8 rounded-2xl w-full max-w-md shadow-lg mt-[-20px]">
         <div class="flex items-center justify-center gap-4 mb-4">
             <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
             <h2 class="text-xl font-bold font-serif">Photographer Login</h2>
         </div>
 
         <p class="text-sm text-gray-700 text-center -mt-5 mb-7">
-            Welcome back!<br>Enter your Credentials to access your account
+            Welcome back!<br>Enter your credentials to access your account
         </p>
 
         @if($errors->any())
@@ -48,7 +52,8 @@
         </a>
 
         <div class="text-center text-sm mt-5">
-            Don’t have an account? <a href="{{ route('register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
+            Don’t have an account?
+            <a href="{{ route('register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
         </div>
     </div>
 

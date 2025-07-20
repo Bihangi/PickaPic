@@ -26,14 +26,9 @@ class GoogleController extends Controller
             $email = $user->getEmail();
             $googleId = $user->getId();
 
-            // You can now create/login the user in your app
-            // Example: check if user exists in DB and log them in
 
-            return response()->json([
-                'name' => $name,
-                'email' => $email,
-                'google_id' => $googleId
-            ]);
+            return redirect()->route('dashboard');
+
 
         } catch (\Exception $e) {
             return redirect('/')->with('error', 'Something went wrong: ' . $e->getMessage());
