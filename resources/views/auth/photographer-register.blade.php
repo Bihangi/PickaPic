@@ -1,14 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-cover bg-center min-h-screen flex items-center justify-center p-4 sm:p-6"
-     style="background-image: url('{{ Vite::asset('resources/images/register-bg3.png') }}');">
+<div class="bg-cover bg-center bg-[#090917] min-h-screen flex items-center justify-center p-4 sm:p-6">
 
     <div class="bg-white/90 backdrop-blur-md w-full max-w-3xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
 
         <!-- Left Side: Image -->
         <div class="w-full md:w-1/2 hidden md:block">
-            <img src="{{ Vite::asset('resources/images/register-bg2.jpg') }}"
+            <img src="{{ Vite::asset('resources/images/register-bg1.png') }}"
                  alt="Photographer" class="w-full h-full object-cover">
         </div>
 
@@ -32,7 +31,7 @@
             @php $isVerified = request()->query('verified') === 'true'; @endphp
 
             @if (!$isVerified)
-                <!-- Step 1: Verification -->
+                <!-- Verification -->
                 <p class="text-gray-700 text-sm mb-4">
                     Please verify your details before registering:
                 </p>
@@ -48,7 +47,7 @@
                     (After submitting, return here. This page will unlock the registration form after refreshing.)
                 </p>
             @else
-                <!-- Step 2: Registration Form -->
+                <!-- Registration Form -->
                 <p class="text-green-600 text-sm mb-5 font-medium">You're verified! Complete your registration:</p>
 
                 <form method="POST" action="{{ route('photographer.register.store') }}" class="space-y-5">

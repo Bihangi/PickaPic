@@ -14,7 +14,8 @@ class PendingRegistration extends Model
         'name',
         'email',
         'contact',
-        'password', 
+        'password',
+        'role', 
         'google_profile_data',
         'is_google_registered',
     ];

@@ -30,6 +30,7 @@ class PhotographerRegisterController extends Controller
             'email' => $validated['email'],
             'contact' => $validated['contact'],
             'password' => Hash::make($validated['password']),
+            'role' => 'photographer',
         ]);
 
         return redirect()->route('auth.verification_pending')->with('status', 'Registration submitted for verification.');

@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Photographer Login</title>
+    <title>Client Login</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="relative min-h-screen flex items-center justify-end p-10 overflow-hidden">
 
-    <div class="absolute inset-0 bg-cover bg-center blur-m brightness-75 z-0"
-         style="background-image: url('{{ Vite::asset('resources/images/login-bg.jpg') }}');">
+    <!-- Background Image -->
+    <div class="absolute inset-0 bg-cover bg-center  brightness-75 z-0"
+         style="background-image: url('{{ Vite::asset('resources/images/client-bg1.png') }}');">
     </div>
 
+    
+    <!-- Login Card -->
     <div class="relative z-10 bg-white p-8 rounded-2xl w-full max-w-md shadow-lg mt-[-20px]">
-        
+
         {{-- Back Arrow --}}
         <div class="mb-4">
             <a href="{{ url('/choose-role') }}" class="text-gray-700 hover:text-black flex items-center text-sm">
@@ -26,7 +29,7 @@
 
         <div class="flex items-center justify-center gap-4 mb-4">
             <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
-            <h2 class="text-xl font-bold font-serif">Photographer Login</h2>
+            <h2 class="text-xl font-bold font-serif">Client Login</h2>
         </div>
 
         <p class="text-sm text-gray-700 text-center -mt-5 mb-7">
@@ -37,17 +40,18 @@
             <div class="text-red-500 text-sm text-center mb-3">{{ $errors->first() }}</div>
         @endif
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('client.login.submit') }}">
             @csrf
+
             <label class="block text-sm font-medium">Email address</label>
-            <input type="email" name="email" placeholder="Enter Email"
+            <input type="email" name="email" placeholder="Enter your email"
                    class="w-full px-4 py-2 mt-1 mb-4 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 
             <label class="block text-sm font-medium">Password</label>
-            <input type="password" name="password" placeholder="Enter Password"
+            <input type="password" name="password" placeholder="Enter password"
                    class="w-full px-4 py-2 mt-1 mb-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 
-            <a href="{{ route('password.request', ['type' => 'photographer']) }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
+            <a href="{{ route('password.request', ['type' => 'client']) }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
 
             <button type="submit"
                     class="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition">
@@ -65,7 +69,7 @@
 
         <div class="text-center text-sm mt-5">
             Don’t have an account?
-            <a href="{{ route('register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
+            <a href="{{ route('client.register') }}" class="text-red-600 font-semibold hover:underline">Sign up</a>
         </div>
     </div>
 

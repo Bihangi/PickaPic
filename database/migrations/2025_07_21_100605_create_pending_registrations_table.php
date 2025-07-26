@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique(); 
             $table->string('contact')->nullable();
             $table->string('password')->nullable(); 
+            $table->string('role')->default('photographer');
             $table->json('google_profile_data')->nullable(); 
             $table->boolean('is_google_registered')->default(false); 
             $table->timestamps();

@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\PendingRegistration;
 use App\Models\User;
-
+use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Auth\ClientLoginController;
+use App\Http\Controllers\Auth\ClientRegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\Auth\PhotographerLoginController;
@@ -20,8 +22,9 @@ Route::get('/', function () {
 });
 
 // Photographer Login Routes
-Route::get('/photographer-login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
-Route::get('/photographer/login', fn() => view('auth.photographer-login'));
+Route::get('/photographer/login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
+Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
+Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
 // Photographer Registration Routes
 Route::get('/register/photographer', function (Request $request) {
@@ -38,12 +41,10 @@ Route::view('/verification-pending', 'auth.verification_pending')->name('auth.ve
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('auth.google.callback');
 
-// Main Registration Logic (POST)
+// Main Photographer Registration Logic (POST)
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
     $isGoogle = Session::get('google_auth_completed', false);
-
-    $googleUser = Session::get('google_user_data');
 
     $rules = [
         'name' => 'required|string|max:255',
@@ -83,13 +84,13 @@ Route::post('/register/photographer', function (Request $request) {
     return redirect()->route('verification.pending');
 })->name('photographer.register.store');
 
+// Photographer Dashboard (authenticated)
+Route::get('/dashboard', [PhotographerLoginController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
+
 // Verification Pending View
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
-
-// Photographer Dashboard (authenticated)
-Route::get('/photographer/dashboard', [PhotographerLoginController::class, 'index'])
-    ->name('dashboard')
-    ->middleware('auth');
 
 // Authenticated Profile Management
 Route::middleware('auth')->group(function () {
@@ -99,12 +100,54 @@ Route::middleware('auth')->group(function () {
 });
 
 // Guest-only Password Reset
-Route::middleware('guest')->group(function () {
-    Route::get('forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
+
+// Choose Role View
+Route::view('/choose-role', 'auth.choose-role')->name('choose.role');
+
+// Admin Login
+Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
+
+Route::get('/admin/dashboard', function () {
+    return 'Welcome to Admin Dashboard';
+})->middleware('auth')->name('admin.dashboard');
+
+// Client Routes
+Route::prefix('client')->name('client.')->group(function () {
+    // Register
+    Route::get('register', [ClientRegisterController::class, 'showRegisterForm'])->name('register');
+    Route::post('register', [ClientRegisterController::class, 'register']);
+
+    // Login
+    Route::get('login', [ClientLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [ClientLoginController::class, 'login'])->name('login.submit');
+
+    // Logout
+    Route::post('logout', [ClientLoginController::class, 'logout'])->name('logout');
+
+    // Forgot Password
+    Route::get('forgot-password', [ClientForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('forgot-password', [ClientForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+    // Reset Password
+    Route::get('/reset-password/{token}', [ClientResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ClientResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-// default routes
+Route::get('/client/dashboard', function () {
+    return 'Welcome to Client Dashboard';
+})->middleware('auth')->name('client.dashboard');
+
+// Duplicate check (Optional fallback route)
+Route::get('/client/register', [ClientRegisterController::class, 'showRegistrationForm'])->name('client.register');
+Route::post('/client/register', [ClientRegisterController::class, 'register'])->name('client.register.submit');
+
+// Laravel default auth routes
 require __DIR__.'/auth.php';
