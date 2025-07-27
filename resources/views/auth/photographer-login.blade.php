@@ -37,7 +37,7 @@
             <div class="text-red-500 text-sm text-center mb-3">{{ $errors->first() }}</div>
         @endif
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('photographer.login.submit') }}">
             @csrf
             <label class="block text-sm font-medium">Email address</label>
             <input type="email" name="email" placeholder="Enter Email"

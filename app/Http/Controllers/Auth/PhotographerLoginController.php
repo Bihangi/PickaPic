@@ -8,54 +8,44 @@ use Illuminate\Support\Facades\Auth;
 
 class PhotographerLoginController extends Controller
 {
-    // Show login form
     public function showLoginForm()
     {
         return view('auth.photographer-login');
     }
 
-    // Handle login
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials, $request->remember)) {
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
             $user = Auth::user();
 
-            // Allow only photographers to log in
+            // Check role here
             if ($user->role === 'photographer') {
-                return redirect('/photographer/dashboard');
-
+                return redirect()->route('photographer.dashboard');
             }
 
-            // ogout any non-photographer user and show an error
+            // Not a photographer: Logout and redirect back
             Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('photographer.login')->withErrors([
-                'email' => 'Access denied. Only photographers can log in here.'
+            return redirect()->back()->withErrors([
+                'email' => 'Access denied. Only photographers can log in here.',
             ]);
         }
 
-        // Invalid credentials
-        return redirect()->route('photographer.login')->withErrors([
-            'email' => 'Invalid login credentials.'
+        return redirect()->back()->withErrors([
+            'email' => 'Invalid email or password.',
         ]);
     }
 
-
-    // Handle logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/photographer/login');
+        return redirect()->route('photographer.login');
     }
 
-    // Show dashboard for authenticated photographers
     public function index()
     {
         return view('photographer-dashboard');

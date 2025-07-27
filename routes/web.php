@@ -86,7 +86,7 @@ Route::post('/register/photographer', function (Request $request) {
 
 // Photographer Dashboard (authenticated)
 Route::get('/dashboard', [PhotographerLoginController::class, 'index'])
-    ->middleware('auth')
+    ->middleware(['auth']) 
     ->name('dashboard');
 
 // Verification Pending View

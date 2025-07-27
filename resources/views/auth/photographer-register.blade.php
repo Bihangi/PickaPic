@@ -1,13 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-cover bg-center bg-[#090917] min-h-screen flex items-center justify-center p-4 sm:p-6">
+<div class="min-h-screen bg-cover bg-center flex items-center justify-center py-10 px-4 sm:px-6"
+     style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
+
 
     <div class="bg-white/90 backdrop-blur-md w-full max-w-3xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
 
         <!-- Left Side: Image -->
         <div class="w-full md:w-1/2 hidden md:block">
-            <img src="{{ Vite::asset('resources/images/register-bg1.png') }}"
+            <img src="{{ Vite::asset('resources/images/register-bg.jpg') }}"
                  alt="Photographer" class="w-full h-full object-cover">
         </div>
 
@@ -39,7 +41,7 @@
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSdoHOEzGu5WZR5xQGn1N8_hD_vtmMiOkLrZdciPXyGaiPQh5g/viewform"
                    target="_blank"
                    onclick="markAsVerified()"
-                   class="inline-block w-full text-center bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition mb-4">
+                   class="inline-block w-full text-center bg-black text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition mb-4">
                     Fill Verification Form
                 </a>
 
