@@ -12,7 +12,7 @@ class ClientRegisterController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.client-register'); // or 'auth.client_register' based on your file name
+        return view('auth.client-register'); 
     }
 
     public function register(Request $request)
@@ -21,6 +21,7 @@ class ClientRegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'contact_number' => 'required|string|max:20',
+            'location' => 'required|string|max:255',
             'password' => 'required|string|min:6',
         ]);
 
@@ -30,6 +31,7 @@ class ClientRegisterController extends Controller
             'contact_number' => $validated['contact_number'],
             'password' => Hash::make($validated['password']),
             'role' => 'client',
+            'location' => $validated['location'],
         ]);
 
         Auth::login($user);

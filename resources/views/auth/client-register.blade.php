@@ -40,6 +40,9 @@
                 <input type="text" name="contact_number" placeholder="Contact Number"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 
+                <input type="text" name="location" placeholder="Your Location"
+                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
+
                 <input type="password" name="password" placeholder="Create a Password"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 

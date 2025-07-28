@@ -5,7 +5,7 @@
      style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
 
 
-    <div class="bg-white/90 backdrop-blur-md w-full max-w-3xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
+    <div class="bg-white/90 backdrop-blur-md w-full max-w-2xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
 
         <!-- Left Side: Image -->
         <div class="w-full md:w-1/2 hidden md:block">
@@ -41,7 +41,7 @@
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSdoHOEzGu5WZR5xQGn1N8_hD_vtmMiOkLrZdciPXyGaiPQh5g/viewform"
                    target="_blank"
                    onclick="markAsVerified()"
-                   class="inline-block w-full text-center bg-black text-white font-bold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition mb-4">
+                   class="inline-block w-full text-center bg-black text-white font-bold py-2.5 px-6 rounded-lg hover:bg-gray-800 transition mb-4">
                     Fill Verification Form
                 </a>
 
@@ -50,7 +50,7 @@
                 </p>
             @else
                 <!-- Registration Form -->
-                <p class="text-green-600 text-sm mb-5 font-medium">You're verified! Complete your registration:</p>
+                <p class="text-green-600 text-sm mb-3 font-medium">You're verified! Complete your registration:</p>
 
                 <form method="POST" action="{{ route('photographer.register.store') }}" class="space-y-5">
                     @csrf
@@ -62,6 +62,10 @@
                     <input type="email" name="email" placeholder="E-mail Address"
                            class="w-full border-b border-gray-300 focus:border-black focus:outline-none py-2 text-sm placeholder-gray-500 transition duration-150"
                            value="{{ old('email') }}" required>
+                    
+                    <input type="text" name="location" placeholder="Your Location"
+                           class="w-full border-b border-gray-300 focus:border-black focus:outline-none py-2 text-sm placeholder-gray-500 transition duration-150"
+                           value="{{ old('location') }}" required>
 
                     <input type="text" name="contact" placeholder="Contact Number"
                            class="w-full border-b border-gray-300 focus:border-black focus:outline-none py-2 text-sm placeholder-gray-500 transition duration-150"

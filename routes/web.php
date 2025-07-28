@@ -116,7 +116,7 @@ Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
 
 Route::get('/admin/dashboard', function () {
-    return 'Welcome to Admin Dashboard';
+    return view('admin-dashboard');
 })->middleware('auth')->name('admin.dashboard');
 
 // Client Routes
@@ -142,7 +142,7 @@ Route::prefix('client')->name('client.')->group(function () {
 });
 
 Route::get('/client/dashboard', function () {
-    return 'Welcome to Client Dashboard';
+    return view('client-dashboard');
 })->middleware('auth')->name('client.dashboard');
 
 // Duplicate check (Optional fallback route)
