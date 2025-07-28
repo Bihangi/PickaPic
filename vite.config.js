@@ -4,7 +4,7 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/choose-role.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/choose-role.js', 'resources/js/footer.js',],
             refresh: true,
         }),
     ],

@@ -1,8 +1,23 @@
 {{-- resources/views/choose-role.blade.php --}}
-@extends('layouts.app') 
-@vite(['resources/js/choose-role.js'])
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Your Role - PickaPic</title>
 
-@section('content')
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/choose-role.js'])
+
+    <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
 <div class="relative min-h-screen overflow-hidden">
   <!-- Slideshow Background -->
   <div class="absolute inset-0 z-0 overflow-hidden">
@@ -37,8 +52,12 @@
     </div>
   </div>
 </div>
-@endsection
 
-@push('scripts')
-  @vite('resources/js/choose-role.js')
-@endpush
+<script>
+  function navigateTo(url) {
+    window.location.href = url;
+  }
+</script>
+
+</body>
+</html>

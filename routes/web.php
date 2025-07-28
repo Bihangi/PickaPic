@@ -85,9 +85,9 @@ Route::post('/register/photographer', function (Request $request) {
 })->name('photographer.register.store');
 
 // Photographer Dashboard (authenticated)
-Route::get('/dashboard', [PhotographerLoginController::class, 'index'])
-    ->middleware(['auth']) 
-    ->name('dashboard');
+Route::get('/photographer/dashboard', [PhotographerLoginController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('photographer.dashboard');
 
 // Verification Pending View
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');

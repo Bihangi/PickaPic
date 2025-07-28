@@ -40,7 +40,7 @@ class ProfileController extends Controller
 
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->photographer()->updateOrCreate(
+            auth()->user()->photographer->updateOrCreate(
                 ['user_id' => $user->id],
                 ['profile_picture' => $path]
             );
@@ -49,7 +49,7 @@ class ProfileController extends Controller
         $user->save();
 
         // Handle photographer profile update
-        $user->photographer()->updateOrCreate(
+        auth()->user()->photographer->updateOrCreate(
             ['user_id' => $user->id],
             [
                 'bio' => $request->input('bio'),
