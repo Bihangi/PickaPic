@@ -34,17 +34,17 @@
         <h1 class="text-4xl md:text-5xl font-bold mb-12 tracking-wide">Choose Your Role</h1>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-7 max-w-6xl mx-auto">
           <div onclick="navigateTo('{{ route('admin.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/admin.png') }}" alt="Admin" class="mx-auto mb-6 w-[72px]">
+            <img src="{{ Vite::asset('resources/images/admin-logo.png') }}" alt="Admin" class="mx-auto mb-6 w-[72px]">
             <h2 class="text-2xl font-semibold text-black">Admin</h2>
           </div>
 
           <div onclick="navigateTo('{{ route('photographer.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/photographer.png') }}" alt="Photographer" class="mx-auto mb-6 w-[72px]"/>
+            <img src="{{ Vite::asset('resources/images/photographer-logo.png') }}" alt="Photographer" class="mx-auto mb-6 w-[72px]"/>
             <h2 class="text-2xl font-semibold text-black">Photographer</h2>
           </div>
 
           <div onclick="navigateTo('{{ route('client.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/user.png') }}" alt="User" class="mx-auto mb-6 w-[72px]"/>
+            <img src="{{ Vite::asset('resources/images/client-logo.png') }}" alt="User" class="mx-auto mb-6 w-[72px]"/>
             <h2 class="text-2xl font-semibold text-black">Client</h2>
           </div>
         </div>

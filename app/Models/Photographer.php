@@ -10,10 +10,18 @@ class Photographer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'bio',
-        'profile_picture',
-    ];
+    'google_id',
+    'name',
+    'email',
+    'contact',
+    'password',
+    'role',
+    'google_profile_data',
+    'is_google_registered',
+    'bio',
+    'profile_picture',
+    'user_id',
+];
 
     public function user()
     {

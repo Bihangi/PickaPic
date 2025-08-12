@@ -5,7 +5,7 @@
         <!-- Explore & Connect -->
         <div class="space-y-3 animate-fade-in-left">
             <h4 class="font-semibold text-lg">Explore & Connect</h4>
-            <ul class="space-y-1">
+            <ul class="space-y-3">
                 <li><a href="#" class="hover:underline">Home</a></li>
                 <li><a href="#" class="hover:underline">Packages</a></li>
                 <li><a href="#" class="hover:underline">Sign In / Sign Up</a></li>
@@ -15,7 +15,7 @@
         <!-- Company -->
         <div class="space-y-3 animate-fade-in-left">
             <h4 class="font-semibold text-lg">Company</h4>
-            <ul class="space-y-1">
+            <ul class="space-y-1.5">
                 <li><a href="#" class="hover:underline">About Us</a></li>
                 <li><a href="#" class="hover:underline">Privacy</a></li>
                 <li><a href="#" class="hover:underline">News</a></li>

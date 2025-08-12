@@ -20,22 +20,31 @@
 <body class="bg-[#f3f3f3] text-black font-poppins">
 
     <!-- Header -->
-    <header class="bg-[#333333] text-white flex justify-between items-center px-8 py-4 shadow-md">
-        <div class="text-2xl font-bold flex items-center space-x-2">
-            <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="w-9 h-9 inline-block" />
-            <span>PickaPic</span>
-        </div>
+    <header class="bg-gradient-to-r from-[#e5e5e5] via-[#b0b0b0] to-[#4b4b4b] text-white shadow-md">
+        <div class="flex items-center px-8 py-4">
+            
+            <!-- Logo -->
+            <div class="ml-16">
+                <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="h-16" />
+            </div>
 
-        <nav class="space-x-6 hidden md:block">
-            <a href="{{ url('/home') }}" class="hover:text-gray-300">HOME</a>
-            <a href="#" class="hover:text-gray-300">ABOUT</a>
-            <a href="#" class="hover:text-gray-300">CATEGORIES</a>
-            <a href="#" class="hover:text-gray-300">PHOTOGRAPHERS</a>
-        </nav>
-        <div class="text-xl">
-            <a href="{{ url('/profile') }}">
-                <img src="{{ Vite::asset('resources/images/profile.png') }}" alt="Profile Icon" class="w-8 h-8 inline-block rounded-full" />
-            </a>
+            <!-- Navigation + User Icon -->
+            <div class="flex items-center ml-auto space-x-8">
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url('/home') }}" class="text-gray-300 hover:text-white transition-colors font-poppins">HOME</a>
+                    <a href="#" class="text-white font-medium font-poppins">ABOUT</a>
+                    <a href="#" class="text-gray-300 hover:text-white transition-colors font-poppins">CATEGORIES</a>
+                    <a href="#" class="text-gray-300 hover:text-white transition-colors font-poppins">PHOTOGRAPHERS</a>
+                </div>
+
+                <!-- User Icon -->
+                <button class="p-2 rounded-full hover:bg-gray-700 transition-colors">
+                    <img src="{{ Vite::asset('resources/images/profile.png') }}" alt="User Icon" class="h-10 w-10 object-cover rounded-full" />
+                </button>
+            </div>
+
         </div>
     </header>
 </body>

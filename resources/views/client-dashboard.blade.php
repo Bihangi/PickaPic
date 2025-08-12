@@ -2,7 +2,7 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="px-8 py-16 grid grid-cols-1 md:grid-cols-2 items-center gap-10 bg-gradient-to-b from-[#ffffff] to-[#f0f0f0]">
+<section class="px-12 py-16 grid grid-cols-1 md:grid-cols-2 items-center gap-10 bg-gradient-to-b from-[#ffffff] to-[#f0f0f0]">
   <div class="space-y-6 animate-fade-in-left">
     <h1 class="text-5xl font-bold leading-snug text-black">
       Discover and<br>Frame Your<br><span class="text-[#333333]">Perfect Moment!</span>
