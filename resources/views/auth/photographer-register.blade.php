@@ -1,11 +1,16 @@
-@extends('layouts.app')
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 
-@section('content')
-<div class="min-h-screen bg-cover bg-center flex items-center justify-center py-10 px-4 sm:px-6"
-     style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Photographer Registration</title>
+</head>
+<body class="min-h-screen bg-cover bg-center flex justify-center py-10 px-4 sm:px-6"
+      style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
 
-
-    <div class="bg-white/90 backdrop-blur-md w-full max-w-2xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
+    <div class="bg-white/90 backdrop-blur-md w-full max-w-2xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl max-h-[90vh]">
 
         <!-- Left Side: Image -->
         <div class="w-full md:w-1/2 hidden md:block">
@@ -13,8 +18,8 @@
                  alt="Photographer" class="w-full h-full object-cover">
         </div>
 
-        <!-- Right Side -->
-        <div class="w-full md:w-1/2 px-6 py-8 sm:px-8 sm:py-10 flex flex-col justify-center">
+        <!-- Right Side (Scrollable if too tall) -->
+        <div class="w-full md:w-1/2 px-6 py-8 sm:px-8 sm:py-10 flex flex-col justify-start overflow-y-auto max-h-[90vh]">
 
             <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-6 leading-snug">
                 Join to plan your next shoot, connect with clients, and showcase your best work.
@@ -102,10 +107,7 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
 
-@section('scripts')
 <script>
     window.onload = function () {
         if (localStorage.getItem('verified') === 'true' && !window.location.search.includes('verified=true')) {
@@ -119,4 +121,6 @@
         localStorage.setItem('verified', 'true');
     }
 </script>
-@endsection
+
+</body>
+</html>

@@ -10,7 +10,7 @@
     <div class="container mx-auto mt-10 p-6 bg-white shadow rounded">
 
         <!-- Back arrow link -->
-        <a href="{{ route('admin.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>

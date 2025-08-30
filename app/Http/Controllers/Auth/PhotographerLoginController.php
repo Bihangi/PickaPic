@@ -48,6 +48,6 @@ class PhotographerLoginController extends Controller
 
     public function index()
     {
-        return view('photographer-dashboard');
+        return view('photographer.photographer-dashboard');
     }
 }

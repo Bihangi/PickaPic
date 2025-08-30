@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // Display list of all users
+    // Display list of all users in custom order
     public function index()
     {
-        $users = User::all(); // or use paginate() for large datasets
+        $users = User::orderByRaw("
+            CASE role
+                WHEN 'admin' THEN 1
+                WHEN 'client' THEN 2
+                WHEN 'photographer' THEN 3
+                ELSE 4
+            END
+        ")->get();
+
         return view('admin.users', compact('users'));
     }
 
@@ -19,8 +27,16 @@ class UserController extends Controller
     public function remove($id)
     {
         $user = User::findOrFail($id);
+
+        // Prevent removing admin
+        if($user->role === 'admin'){
+            return redirect()->route('admin.users.index')
+                             ->with('success', 'Cannot remove admin user!');
+        }
+
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User removed successfully!');
+        return redirect()->route('admin.users.index')
+                         ->with('success', 'User removed successfully!');
     }
 }

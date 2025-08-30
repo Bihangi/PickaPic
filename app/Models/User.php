@@ -38,4 +38,8 @@ class User extends Authenticatable
         return $this->role === 'photographer';
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

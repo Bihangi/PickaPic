@@ -10,7 +10,7 @@
     <div class="container mx-auto mt-10 p-6">
 
         <!-- Back arrow link -->
-        <a href="{{ route('admin.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -42,6 +42,7 @@
                         <th class="border px-4 py-2 text-left">#</th>
                         <th class="border px-4 py-2 text-left">Name</th>
                         <th class="border px-4 py-2 text-left">Email</th>
+                        <th class="border px-4 py-2 text-left">Location</th>
                         <th class="border px-4 py-2 text-left">Role</th>
                         <th class="border px-4 py-2 text-left">Actions</th>
                     </tr>
@@ -52,6 +53,7 @@
             <td class="border px-4 py-2">{{ $loop->iteration }}</td>
             <td class="border px-4 py-2">{{ $user->name }}</td>
             <td class="border px-4 py-2">{{ $user->email }}</td>
+            <td class="border px-4 py-2">{{ $user->location }}</td>
             <td class="border px-4 py-2 capitalize">{{ $user->role }}</td>
             <td class="border px-4 py-2">
                 @if($user->role !== 'admin')
