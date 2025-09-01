@@ -2,125 +2,125 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Availability extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'photographer_id',
         'date',
         'start_time',
         'end_time',
-        'status',
-        'booked_by',
-        'booking_details',
-        'contact_number'
+        'is_available',
+        'booking_id',
+        'user_id',
+        'event_details',
+        'contact_number',
     ];
 
     protected $casts = [
         'date' => 'date',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
-        'booking_details' => 'json'
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+        'is_available' => 'boolean',
     ];
 
-    // Relationships
-    public function photographer()
+    /**
+     * Get the booking associated with this availability
+     */
+    public function booking(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'photographer_id');
+        return $this->belongsTo(Booking::class);
     }
 
-    public function bookedBy()
+    /**
+     * Get the user (client) who booked this availability
+     */
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'booked_by');
+        return $this->belongsTo(User::class);
     }
 
-    // Scopes
+
+    /**
+     * Get only available slots
+     */
     public function scopeAvailable($query)
     {
-        return $query->where('status', 'available');
+        return $query->where('is_available', true);
     }
 
+    /**
+     * Get only booked slots
+     */
     public function scopeBooked($query)
     {
-        return $query->where('status', 'booked');
+        return $query->where('is_available', false)->whereNotNull('user_id');
     }
 
+    /**
+     * Get availabilities for a specific date
+     */
     public function scopeForDate($query, $date)
     {
         return $query->where('date', $date);
     }
 
-    public function scopeFuture($query)
+    /**
+     * Get availabilities for a date range
+     */
+    public function scopeBetweenDates($query, $startDate, $endDate)
     {
-        return $query->where('date', '>=', now()->toDateString());
+        return $query->whereBetween('date', [$startDate, $endDate]);
     }
 
-    public function scopeForPhotographer($query, $photographerId)
+    /**
+     * Check if this availability is booked
+     */
+    public function isBooked(): bool
     {
-        return $query->where('photographer_id', $photographerId);
+        return !$this->is_available && $this->user_id !== null;
     }
 
-    // Accessors
-    public function getFormattedTimeAttribute()
+    /**
+     * Book this availability for a user
+     */
+    public function bookFor(User $user, array $details = []): bool
     {
-        return Carbon::parse($this->start_time)->format('g:i A') . ' - ' . 
-               Carbon::parse($this->end_time)->format('g:i A');
-    }
-
-    public function getFormattedDateAttribute()
-    {
-        return $this->date->format('F j, Y');
-    }
-
-    public function getIsAvailableAttribute()
-    {
-        return $this->status === 'available' && $this->date >= now()->toDateString();
-    }
-
-    public function getIsPastAttribute()
-    {
-        return $this->date < now()->toDateString();
-    }
-
-    
-    // Methods
-    public function book($userId, $details = null, $contactNumber = null)
-    {
-        if ($this->status !== 'available') {
-            return false;
-        }
-
-        if ($this->is_past) {
+        if (!$this->is_available) {
             return false;
         }
 
         $this->update([
-            'status' => 'booked',
-            'booked_by' => $userId,
-            'booking_details' => $details,
-            'contact_number' => $contactNumber
+            'is_available' => false,
+            'user_id' => $user->id,
+            'event_details' => $details['event_details'] ?? null,
+            'contact_number' => $details['contact_number'] ?? $user->phone,
         ]);
 
         return true;
     }
 
-    public function cancel()
+    /**
+     * Cancel booking and make availability available again
+     */
+    public function cancelBooking(): bool
     {
-        if ($this->status === 'booked') {
-            $this->update([
-                'status' => 'available',
-                'booked_by' => null,
-                'booking_details' => null,
-                'contact_number' => null
-            ]);
-            return true;
+        if ($this->is_available) {
+            return false;
         }
 
-        return false;
+        $this->update([
+            'is_available' => true,
+            'user_id' => null,
+            'booking_id' => null,
+            'event_details' => null,
+            'contact_number' => null,
+        ]);
+
+        return true;
     }
 }

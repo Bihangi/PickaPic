@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\PendingRegistration;
 use App\Models\User;
+use App\Models\Package;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\ClientLoginController;
 use App\Http\Controllers\Auth\ClientRegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\PhotographerLoginController;
 use App\Http\Controllers\Auth\PhotographerRegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -139,6 +141,17 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
     Route::post('/availabilities', [AvailabilityController::class, 'store'])->name('availabilities.store');
     Route::get('/availabilities/events', [AvailabilityController::class, 'events'])->name('availabilities.events');
     Route::delete('/availabilities/{availability}', [AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
+    
+    // Package Management
+    Route::get('/packages', [PackageController::class, 'myPackages'])->name('packages.index');
+    Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
+    Route::put('/packages/{package}', [PackageController::class, 'update'])->name('packages.update');
+    Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
+    
+    // Booking management for photographers
+    Route::get('/bookings', [BookingController::class, 'photographerBookings'])->name('bookings.index');
+    Route::post('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.update_status');
+    Route::delete('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
 // Google OAuth
@@ -180,10 +193,23 @@ Route::prefix('photographers')->group(function () {
     Route::get('/', [ClientPhotographerController::class, 'index'])->name('photographers.index');
     Route::get('/{id}', [ClientPhotographerController::class, 'show'])->name('photographers.show');
     
-    // FIXED: Use ClientPhotographerController for consistency
+    // Reviews
     Route::post('/{photographer}/reviews', [ClientPhotographerController::class, 'storeReview'])
          ->middleware('auth')
          ->name('reviews.store');
+});
+
+// Booking Routes (require authentication)
+Route::middleware(['auth'])->group(function () {
+    // Booking creation and management
+    Route::get('/book/{photographer}/package/{package?}', [BookingController::class, 'create'])->name('book.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
+    Route::delete('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    
+    // Package API routes for dynamic loading
+    Route::get('/api/photographers/{photographer}/packages', [PackageController::class, 'index'])->name('api.packages.index');
 });
 
 // Client booking availability
@@ -194,6 +220,9 @@ Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/photographers/{photographerId}/availability', [AvailabilityController::class, 'getPhotographerAvailability']);
     Route::get('/photographers/{photographerId}/availability/date', [AvailabilityController::class, 'getAvailabilityByDate']);
     Route::post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('availabilities.book');
+    
+    // Package pricing calculation
+    Route::post('/packages/{package}/calculate-price', [PackageController::class, 'calculatePrice'])->name('api.packages.calculate_price');
 });
 
 // Public API routes 

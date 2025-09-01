@@ -203,9 +203,13 @@
               </div>
             </div>
             
-            <p class="text-gray-600 text-base leading-relaxed mb-6">
-              {{ $pkg->details }}
-            </p>
+            <ul class="list-disc pl-6 text-gray-600 text-base leading-relaxed mb-6 space-y-2">
+              @foreach(explode("\n", $pkg->details) as $line)
+                @if(trim($line) !== '')
+                  <li>{{ trim($line) }}</li>
+                @endif
+              @endforeach
+            </ul>
             
             <div class="flex justify-end">
               <a href="{{ route('book.create', ['photographer' => $photographer->id, 'package' => $pkg->id]) }}"

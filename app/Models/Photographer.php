@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class Photographer extends Model
+class Photographer extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         // Existing fields
@@ -30,15 +31,28 @@ class Photographer extends Model
         'experience',
         'profile_image',
         'availability',
+        'website',
+        'instagram',
+        'is_verified'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
+        'email_verified_at' => 'datetime',
         'categories' => 'array',
         'portfolio' => 'array',
         'languages' => 'array',
         'availability' => 'array',
+        'is_verified' => 'boolean',
     ];
 
+    /**
+     * Relationships
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -47,6 +61,11 @@ class Photographer extends Model
     public function packages()
     {
         return $this->hasMany(Package::class);
+    }
+
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class);
     }
 
     public function reviews()
@@ -59,7 +78,14 @@ class Photographer extends Model
         return $this->hasMany(Portfolio::class);
     }
 
-    
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Accessors / Mutators
+     */
     // Get categories as array
     public function getCategoriesAttribute($value)
     {
@@ -72,5 +98,32 @@ class Photographer extends Model
         $this->attributes['categories'] = is_array($value) ? implode(',', $value) : $value;
     }
 
+    /**
+     * Custom Attributes
+     */
+    public function getUpcomingAvailabilityAttribute()
+    {
+        return $this->availabilities()
+                    ->where('status', 'available')
+                    ->where('date', '>=', now()->toDateString())
+                    ->where('date', '<=', now()->addDays(30)->toDateString())
+                    ->orderBy('date')
+                    ->orderBy('start_time')
+                    ->get();
+    }
 
+    public function getActivePackagesCountAttribute()
+    {
+        return $this->packages()->count();
+    }
+
+    public function getTotalBookingsCountAttribute()
+    {
+        return $this->bookings()->count();
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?? 0;
+    }
 }
