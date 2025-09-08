@@ -10,6 +10,7 @@
         "doctrine/dbal": "^4.3",
         "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.1",
         "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1",

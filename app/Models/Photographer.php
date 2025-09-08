@@ -126,4 +126,22 @@ class Photographer extends Authenticatable
     {
         return $this->reviews()->avg('rating') ?? 0;
     }
+
+    /**
+     * Chat System Relationships
+     */
+    public function conversations()
+    {
+        return $this->hasMany(\App\Models\Conversation::class, 'photographer_id', 'id');
+    }
+
+    public function clientConversations()
+    {
+        return $this->hasMany(\App\Models\Conversation::class, 'user_id', 'id');
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(\App\Models\Message::class, 'sender_id', 'id');
+    }
 }

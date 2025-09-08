@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->role === 'photographer';
     }
 
+    public function photographer()
+    {
+        return $this->hasOne(Photographer::class);
+    }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -49,5 +54,20 @@ class User extends Authenticatable
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function clientConversations()
+    {
+        return $this->hasMany(Conversation::class, 'user_id');
+    }
+
+    public function photographerConversations()
+    {
+        return $this->hasMany(Conversation::class, 'photographer_id');
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
     }
 }

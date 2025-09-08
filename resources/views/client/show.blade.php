@@ -182,56 +182,153 @@
     <!-- Packages Section -->
     <div class="mb-16">
       <div class="text-center mb-10">
-        <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4 tracking-tight">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-3 tracking-tight">
           Photography Packages
         </h2>
-        <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+        <p class="text-gray-600 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed">
           Choose the perfect package that matches your vision and budget
         </p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        @forelse($photographer->packages as $pkg)
-          <div class="group bg-white rounded-2xl shadow-lg border border-gray-100 hover:border-gray-200 p-6 sm:p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
-            <div class="flex items-start justify-between mb-4">
-              <h3 class="text-2xl font-bold text-black group-hover:text-gray-800 transition-colors">
-                {{ $pkg->name }}
-              </h3>
-              <div class="text-right">
-                <div class="text-3xl font-bold text-black">LKR {{ number_format($pkg->price) }}</div>
-                <div class="text-sm text-gray-500">Starting from</div>
+      @forelse($photographer->packages as $index => $pkg)
+        <div class="group mb-6 last:mb-0">
+          <!-- Package Card -->
+          <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all duration-500 overflow-hidden hover:transform hover:scale-[1.02] hover:-translate-y-2">
+            <!-- Package Header -->
+            <div class="bg-gradient-to-r from-gray-900/95 via-black to-gray-900/95 p-4 sm:p-6 text-white relative overflow-hidden">
+              @if($loop->index === 1)
+                <div class="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold transform rotate-12 z-10">
+                  POPULAR
+                </div>
+              @endif
+              
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <!-- Package Name & Icon -->
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-white/30 transition-colors duration-300">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight">
+                      {{ $pkg->name }}
+                    </h3>
+                    <p class="text-white/80 text-sm">Professional photography package</p>
+                  </div>
+                </div>
+                
+                <!-- Package Price -->
+                <div class="text-center sm:text-right">
+                  <div class="bg-white/20 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20 group-hover:bg-white/30 transition-all duration-300">
+                    <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                      LKR {{ number_format($pkg->price) }}
+                    </div>
+                    <div class="text-xs sm:text-sm text-white/80 font-medium">Starting from</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Subtle background pattern -->
+              <div class="absolute top-0 right-0 w-32 h-32 opacity-10">
+                <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                  <circle cx="50" cy="20" r="2"/>
+                  <circle cx="70" cy="30" r="1.5"/>
+                  <circle cx="30" cy="40" r="1"/>
+                  <circle cx="80" cy="50" r="2"/>
+                  <circle cx="20" cy="60" r="1.5"/>
+                  <circle cx="60" cy="70" r="1"/>
+                </svg>
               </div>
             </div>
             
-            <ul class="list-disc pl-6 text-gray-600 text-base leading-relaxed mb-6 space-y-2">
-              @foreach(explode("\n", $pkg->details) as $line)
-                @if(trim($line) !== '')
-                  <li>{{ trim($line) }}</li>
-                @endif
-              @endforeach
-            </ul>
-            
-            <div class="flex justify-end">
-              <a href="{{ route('book.create', ['photographer' => $photographer->id, 'package' => $pkg->id]) }}"
-                 class="group/link inline-flex items-center bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-md hover:shadow-lg font-semibold">
-                <span class="mr-2">Book This Package</span>
-                <svg class="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-              </a>
+            <!-- Package Content -->
+            <div class="p-4 sm:p-6">
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <!-- Package Details -->
+                <div class="lg:col-span-2">
+                  <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    What's Included
+                  </h4>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach(explode("\n", $pkg->details) as $line)
+                      @if(trim($line) !== '')
+                        <div class="flex items-start space-x-3 p-2 bg-gray-50/60 rounded-lg border border-gray-100/50 hover:bg-gray-50 hover:transform hover:translate-x-1 transition-all duration-200">
+                          <div class="flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                          </div>
+                          <span class="text-gray-700 text-sm leading-relaxed">{{ trim($line) }}</span>
+                        </div>
+                      @endif
+                    @endforeach
+                  </div>
+                </div>
+                
+                <!-- Book Package Section -->
+                <div class="lg:col-span-1">
+                  <div class="bg-gradient-to-br from-gray-50/80 to-white/80 rounded-xl p-4 border border-gray-200/50 text-center space-y-3 hover:shadow-md transition-shadow duration-300">
+                    <div class="w-12 h-12 mx-auto bg-black/5 rounded-full flex items-center justify-center">
+                      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    
+                    <div>
+                      <h5 class="text-sm font-semibold text-gray-800 mb-1">Ready to Book?</h5>
+                      <p class="text-gray-600 text-xs mb-3">Secure your photography session</p>
+                    </div>
+                    
+                    <a href="{{ route('book.create', ['photographer' => $photographer->id, 'package' => $pkg->id]) }}"
+                       class="group/btn inline-flex items-center justify-center w-full bg-black text-white px-4 py-3 rounded-xl hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl font-semibold text-sm">
+                      <span class="mr-2">Book Package</span>
+                      <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                      </svg>
+                    </a>
+                    
+                    <div class="pt-1">
+                      <p class="text-xs text-gray-500">
+                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        Secure booking process
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        @empty
-          <div class="lg:col-span-2 text-center py-12">
-            <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        </div>
+      @empty
+        <!-- Empty State -->
+        <div class="text-center py-16">
+          <div class="max-w-md mx-auto">
+            <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-2xl flex items-center justify-center">
+              <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
               </svg>
             </div>
-            <p class="text-gray-500 text-lg">No packages available at the moment.</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">No Packages Available</h3>
+            <p class="text-gray-500 text-sm mb-6">This photographer hasn't added any packages yet.</p>
+            <div class="bg-gray-50/50 rounded-xl p-6 border border-gray-200/50">
+              <p class="text-sm text-gray-600">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                You can still contact the photographer directly using the information above.
+              </p>
+            </div>
           </div>
-        @endforelse
-      </div>
+        </div>
+      @endforelse
     </div>
 
     <!-- Reviews Section -->
@@ -310,7 +407,7 @@
               <input type="text" name="display_name" placeholder="e.g., John D., JD, etc."
                     value="{{ old('display_name') }}"
                     class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-black focus:ring-0 transition-all duration-300 bg-white shadow-sm hover:shadow-md">
-              <small class="text-gray-500">Leave as-is to use your profile name, or customize it. If you tick “Post anonymously”, this will be ignored.</small>
+              <small class="text-gray-500">Leave as-is to use your profile name, or customize it. If you tick "Post anonymously", this will be ignored.</small>
               @error('display_name') 
                 <div class="text-red-600 text-sm mt-2">{{ $message }}</div> 
               @enderror
@@ -401,7 +498,7 @@
 <style>
 /* Enhanced hover effects */
 .group:hover {
-  transform: translateY(-8px) scale(1.01);
+  transform: translateY(-4px) scale(1.005);
 }
 
 /* Smooth transitions */
@@ -424,15 +521,38 @@ select {
   padding-right: 3rem;
 }
 
-/* Enhanced shadow effects */
+/* Enhanced package cards */
+.package-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(229,231,235,0.3);
+}
+
+.package-card:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.95) 100%);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced shadow effects for depth */
 .shadow-3xl {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* Responsive adjustments */
+/* Responsive enhancements */
 @media (max-width: 768px) {
   .group:hover {
-    transform: translateY(-4px) scale(1.005);
+    transform: translateY(-2px) scale(1.002);
+  }
+  
+  .package-card:hover {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 640px) {
+  .group:hover {
+    transform: translateY(-1px) scale(1.001);
   }
 }
 
@@ -448,8 +568,88 @@ select {
   }
 }
 
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .animate-fadeInUp {
   animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.6s ease-out;
+}
+
+/* Glassmorphism effect for modern feel */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Enhanced button interactions */
+.btn-enhanced {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-enhanced:hover::before {
+  left: 100%;
+}
+
+/* Feature highlight animations */
+.feature-highlight {
+  position: relative;
+}
+
+.feature-highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, transparent, rgba(0,0,0,0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-highlight:hover::after {
+  opacity: 1;
 }
 </style>
 @endsection

@@ -102,4 +102,10 @@ class Booking extends Model
     {
         $this->update(['status' => 'completed']);
     }
+
+    // Local scope for completed bookings
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
 }

@@ -11,12 +11,13 @@ class Availability extends Model
     use HasFactory;
 
     protected $fillable = [
+        'photographer_id', 
         'date',
         'start_time',
         'end_time',
-        'is_available',
+        'status',  
+        'client_id',  
         'booking_id',
-        'user_id',
         'event_details',
         'contact_number',
     ];
@@ -25,8 +26,23 @@ class Availability extends Model
         'date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
-        'is_available' => 'boolean',
     ];
+
+    /**
+     * Get the photographer who owns this availability
+     */
+    public function photographer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'photographer_id');
+    }
+
+    /**
+     * Get the client who booked this availability
+     */
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'client_id');
+    }
 
     /**
      * Get the booking associated with this availability
@@ -37,20 +53,11 @@ class Availability extends Model
     }
 
     /**
-     * Get the user (client) who booked this availability
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-
-    /**
      * Get only available slots
      */
     public function scopeAvailable($query)
     {
-        return $query->where('is_available', true);
+        return $query->where('status', 'available');
     }
 
     /**
@@ -58,7 +65,7 @@ class Availability extends Model
      */
     public function scopeBooked($query)
     {
-        return $query->where('is_available', false)->whereNotNull('user_id');
+        return $query->where('status', 'booked');
     }
 
     /**
@@ -82,23 +89,31 @@ class Availability extends Model
      */
     public function isBooked(): bool
     {
-        return !$this->is_available && $this->user_id !== null;
+        return $this->status === 'booked';
     }
 
     /**
-     * Book this availability for a user
+     * Check if this availability is available
      */
-    public function bookFor(User $user, array $details = []): bool
+    public function isAvailable(): bool
     {
-        if (!$this->is_available) {
+        return $this->status === 'available';
+    }
+
+    /**
+     * Book this availability for a client
+     */
+    public function bookFor(User $client, array $details = []): bool
+    {
+        if ($this->status !== 'available') {
             return false;
         }
 
         $this->update([
-            'is_available' => false,
-            'user_id' => $user->id,
+            'status' => 'booked',
+            'client_id' => $client->id,
             'event_details' => $details['event_details'] ?? null,
-            'contact_number' => $details['contact_number'] ?? $user->phone,
+            'contact_number' => $details['contact_number'] ?? $client->phone,
         ]);
 
         return true;
@@ -109,13 +124,13 @@ class Availability extends Model
      */
     public function cancelBooking(): bool
     {
-        if ($this->is_available) {
+        if ($this->status !== 'booked') {
             return false;
         }
 
         $this->update([
-            'is_available' => true,
-            'user_id' => null,
+            'status' => 'available',
+            'client_id' => null,
             'booking_id' => null,
             'event_details' => null,
             'contact_number' => null,

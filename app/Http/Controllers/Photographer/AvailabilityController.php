@@ -23,16 +23,23 @@ class AvailabilityController extends Controller
                 'end_time' => 'required|date_format:H:i|after:start_time',
             ]);
 
-            // Check for overlapping slots
-            $overlapping = Availability::where('photographer_id', Auth::id())
+            // Get the photographer ID
+            $photographerId = Auth::id();
+
+            // Check for overlapping slots using photographer_id (NOT user_id)
+            $overlapping = Availability::where('photographer_id', $photographerId)
                 ->where('date', $request->date)
                 ->where(function($query) use ($request) {
-                    $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                        ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                        ->orWhere(function($q) use ($request) {
-                            $q->where('start_time', '<=', $request->start_time)
-                                ->where('end_time', '>=', $request->end_time);
-                        });
+                    $query->where(function($q) use ($request) {
+                        $q->whereTime('start_time', '<=', $request->start_time)
+                        ->whereTime('end_time', '>', $request->start_time);
+                    })->orWhere(function($q) use ($request) {
+                        $q->whereTime('start_time', '<', $request->end_time)
+                        ->whereTime('end_time', '>=', $request->end_time);
+                    })->orWhere(function($q) use ($request) {
+                        $q->whereTime('start_time', '>=', $request->start_time)
+                        ->whereTime('end_time', '<=', $request->end_time);
+                    });
                 })
                 ->exists();
 
@@ -44,11 +51,12 @@ class AvailabilityController extends Controller
                 ], 422);
             }
 
+            // Create availability with photographer_id
             $availability = Availability::create([
-                'photographer_id' => Auth::id(),
+                'photographer_id' => $photographerId,  // Make sure this is photographer_id
                 'date' => $request->date,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
+                'start_time' => $request->start_time . ':00', // Add seconds
+                'end_time' => $request->end_time . ':00',     // Add seconds
                 'status' => 'available',
             ]);
 
@@ -74,7 +82,7 @@ class AvailabilityController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while adding availability.'
+                'message' => 'An error occurred while adding availability: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -82,24 +90,25 @@ class AvailabilityController extends Controller
     public function events()
     {
         try {
-            $availabilities = Availability::where('photographer_id', Auth::id())
+            $availabilities = Availability::where('user_id', Auth::id())  
                 ->get();
 
             $events = $availabilities->map(function($availability) {
+                $status = $availability->is_available ? 'available' : 'booked';
                 return [
                     'id' => $availability->id,
-                    'title' => ucfirst($availability->status) . ' (' . 
+                    'title' => ucfirst($status) . ' (' . 
                         Carbon::parse($availability->start_time)->format('g:i A') . ' - ' . 
                         Carbon::parse($availability->end_time)->format('g:i A') . ')',
-                    'start' => $availability->date . 'T' . $availability->start_time,
-                    'end' => $availability->date . 'T' . $availability->end_time,
-                    'backgroundColor' => $this->getStatusColor($availability->status),
-                    'borderColor' => $this->getStatusBorderColor($availability->status),
+                    'start' => $availability->date . 'T' . Carbon::parse($availability->start_time)->format('H:i:s'),
+                    'end' => $availability->date . 'T' . Carbon::parse($availability->end_time)->format('H:i:s'),
+                    'backgroundColor' => $this->getStatusColor($status),
+                    'borderColor' => $this->getStatusBorderColor($status),
                     'textColor' => '#ffffff',
                     'extendedProps' => [
-                        'status' => $availability->status,
-                        'start_time' => $availability->start_time,
-                        'end_time' => $availability->end_time,
+                        'status' => $status,
+                        'start_time' => Carbon::parse($availability->start_time)->format('H:i'),
+                        'end_time' => Carbon::parse($availability->end_time)->format('H:i'),
                     ]
                 ];
             });
@@ -118,14 +127,14 @@ class AvailabilityController extends Controller
     public function destroy(Availability $availability)
     {
         try {
-            if ($availability->photographer_id !== Auth::id()) {
+            if ($availability->user_id !== Auth::id()) {  
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized action.'
                 ], 403);
             }
 
-            if ($availability->status === 'booked') {
+            if (!$availability->is_available) {  
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot delete a booked time slot.'
@@ -158,7 +167,7 @@ class AvailabilityController extends Controller
         try {
             $availability = Availability::findOrFail($id);
 
-            if ($availability->status !== 'available') {
+            if (!$availability->is_available) {  
                 return response()->json([
                     'success' => false,
                     'message' => 'This time slot is not available for booking.'
@@ -166,8 +175,8 @@ class AvailabilityController extends Controller
             }
 
             $availability->update([
-                'status' => 'booked',
-                'client_id' => Auth::id()
+                'is_available' => false,  
+                'booking_id' => Auth::id()  
             ]);
 
             Log::info('Availability booked successfully:', ['id' => $id, 'client_id' => Auth::id()]);
@@ -192,8 +201,8 @@ class AvailabilityController extends Controller
     public function getPhotographerAvailability($photographerId)
     {
         try {
-            $availabilities = Availability::where('photographer_id', $photographerId)
-                ->where('status', 'available')
+            $availabilities = Availability::where('user_id', $photographerId) 
+                ->where('is_available', true)  
                 ->where('date', '>=', now()->toDateString())
                 ->orderBy('date')
                 ->orderBy('start_time')

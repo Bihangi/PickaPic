@@ -14,11 +14,13 @@ class Review extends Model
         'user_id', 
         'display_name',
         'rating',
-        'comment'
+        'comment',
+        'is_visible'
     ];
 
     protected $casts = [
         'rating' => 'integer',
+        'is_visible' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

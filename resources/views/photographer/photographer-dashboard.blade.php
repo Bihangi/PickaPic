@@ -1,5 +1,5 @@
 {{-- resources/views/photographer/photographer-dashboard.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -75,7 +75,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-6 text-center border-b border-gray-200">
                         <div class="relative inline-block">
-                            @if(!empty($photographer->profile_image) && Storage::disk('public')->exists($photographer->profile_image))
+                            @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
                                 <img src="{{ asset('storage/'.$photographer->profile_image) }}" 
                                     class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" 
                                     alt="Profile">
@@ -118,7 +118,7 @@
                                     <a href="{{ $photographer->website }}" target="_blank" 
                                        class="flex items-center justify-center w-10 h-10 bg-gray-600 text-white rounded-full hover:shadow-lg transition-shadow">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9m0 18c5 0 9-4 9-9s-4-9-9-9m9 9a9 9 0 01-9 9"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9m9 9a9 9 0 01-9 9"></path>
                                         </svg>
                                     </a>
                                 @endif
@@ -149,6 +149,11 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Contact</label>
                                 <input type="text" name="contact" value="{{ $photographer->contact }}" 
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                <input type="text" name="location" value="{{ $photographer->location }}" 
                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             </div>
                             <div>
@@ -188,17 +193,6 @@
 
             {{-- Main Content --}}
             <div class="lg:col-span-6">
-                {{-- Calendar Section --}}
-                <!--<div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900">Availability Calendar</h3>
-                        <p class="text-sm text-gray-600 mt-1">Click on dates to manage your availability</p>
-                    </div>
-                    <div class="p-6">
-                        <div id="calendar"></div>
-                    </div>
-                </div>-->
-
                 {{-- Quick Add Availability --}}
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                     <div class="p-6 border-b border-gray-200">
@@ -300,7 +294,7 @@
                     </div>
                     <div class="p-6">
                         {{-- Upload Form --}}
-                        <form action="#" method="POST" enctype="multipart/form-data" class="mb-6">
+                        <form action="{{ route('photographer.portfolio.upload') }}" method="POST" enctype="multipart/form-data" class="mb-6">
                             @csrf
                             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                                 <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -359,143 +353,12 @@
     </div>
 </div>
 
-{{-- FullCalendar CDN --}}
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
-
 <script>
-// Global calendar variable
-let globalCalendar;
-
 // Profile Edit Toggle
 function toggleProfileEdit() {
     const form = document.getElementById('profile-edit-form');
     form.classList.toggle('hidden');
 }
-
-// Calendar initialization script 
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    
-    globalCalendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: '{{ route("photographer.availabilities.events") }}',
-        selectable: true,
-        selectMirror: true,
-        
-        select: function(info) {
-            if (info.start < new Date().setHours(0,0,0,0)) {
-                showNotification('Cannot add availability for past dates', 'error');
-                globalCalendar.unselect();
-                return;
-            }
-
-            if (confirm('Add availability on ' + info.startStr + '?')) {
-                const startTime = prompt('Enter start time (HH:MM format):', '09:00');
-                const endTime = prompt('Enter end time (HH:MM format):', '17:00');
-
-                if (!startTime || !endTime) {
-                    globalCalendar.unselect();
-                    return;
-                }
-
-                const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-                if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
-                    alert('Invalid time format. Please use HH:MM (24hr).');
-                    globalCalendar.unselect();
-                    return;
-                }
-
-                // Send AJAX request to save availability
-                fetch('{{ route("photographer.availabilities.store") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        date: info.startStr,
-                        start_time: startTime,
-                        end_time: endTime
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showNotification('Availability added successfully!', 'success');
-                        globalCalendar.refetchEvents();
-                    } else {
-                        showNotification(data.message || 'Error saving availability.', 'error');
-                    }
-                })
-                .catch(() => {
-                    showNotification('Server error occurred.', 'error');
-                });
-            }
-
-            globalCalendar.unselect();
-        },
-
-        eventClick: function(info) {
-            const event = info.event;
-            const eventProps = event.extendedProps;
-            
-            const message = `Time: ${eventProps.start_time} - ${eventProps.end_time}\nStatus: ${eventProps.status}\n\nClick OK to DELETE this availability slot.`;
-            
-            if (confirm(message)) {
-                fetch(`{{ url('photographer/availabilities') }}/${event.id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        info.event.remove();
-                        showNotification(data.message, 'success');
-                    } else {
-                        showNotification(data.message || 'Error removing availability', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Error removing availability', 'error');
-                });
-            }
-        },
-        
-        eventDidMount: function(info) {
-            const event = info.event;
-            const eventProps = event.extendedProps;
-            
-            if (eventProps.status === 'available') {
-                info.el.style.backgroundColor = '#10b981';
-                info.el.style.borderColor = '#059669';
-            } else if (eventProps.status === 'booked') {
-                info.el.style.backgroundColor = '#ef4444';
-                info.el.style.borderColor = '#dc2626';
-            }
-            
-            info.el.style.borderRadius = '6px';
-            info.el.style.cursor = 'pointer';
-            info.el.title = `${eventProps.status} - ${eventProps.start_time} to ${eventProps.end_time}`;
-        }
-    });
-    
-    globalCalendar.render();
-});
 
 // Quick Add Availability Form Submission
 document.addEventListener('DOMContentLoaded', function() {
@@ -545,9 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     showNotification(data.message, 'success');
                     this.reset();
-                    if (globalCalendar) {
-                        globalCalendar.refetchEvents();
-                    }
                 } else {
                     showNotification(data.message || 'Error adding availability', 'error');
                 }
@@ -662,41 +522,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {{-- Custom CSS for better styling --}}
 <style>
-.fc-theme-standard .fc-scrollgrid {
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-}
-
-.fc-theme-standard th {
-    background-color: #f9fafb;
-    border-color: #e5e7eb;
-    font-weight: 600;
-    color: #374151;
-}
-
-.fc-theme-standard td {
-    border-color: #e5e7eb;
-}
-
-.fc-day-today {
-    background-color: #fef3c7 !important;
-}
-
-.fc-button-primary {
-    background-color: #4f46e5 !important;
-    border-color: #4f46e5 !important;
-}
-
-.fc-button-primary:hover {
-    background-color: #4338ca !important;
-    border-color: #4338ca !important;
-}
-
-.fc-button-primary:disabled {
-    background-color: #9ca3af !important;
-    border-color: #9ca3af !important;
-}
-
 /* Smooth transitions */
 .transition-all {
     transition: all 0.3s ease;
