@@ -65,7 +65,7 @@
                     <li><a href="{{ route('about') }}" class="footer-link text-gray-300">About Us</a></li>
                     <li><a href="{{ route('categories') }}" class="footer-link text-gray-300">Categories</a></li>
                     <li><a href="#" class="footer-link text-gray-300">Photographers</a></li>
-                    <li><a href="#" class="footer-link text-gray-300">Contact</a></li>
+                    <li><a href="{{ route('contact') }}" class="footer-link text-gray-300">Contact</a></li>
                 </ul>
             </div>
 

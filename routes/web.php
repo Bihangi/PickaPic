@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\ClientLoginController;
 use App\Http\Controllers\Auth\ClientRegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\PhotographerLoginController;
@@ -359,6 +360,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         return redirect()->route('admin.login');
     })->name('logout');
 });
+
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
 
 require __DIR__.'/auth.php';
 
