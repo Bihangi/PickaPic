@@ -16,7 +16,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="{{ route('photographer.dashboard') }}" class="text-xl font-bold text-gray-800">
+                    <a href="{{ route('photographer.dashboard.index') }}" class="text-xl font-bold text-gray-800">
                         <i class="fas fa-camera mr-2 text-blue-600"></i>
                         PhotoBooking
                     </a>

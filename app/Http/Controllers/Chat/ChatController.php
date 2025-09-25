@@ -287,7 +287,7 @@ class ChatController extends Controller
                         'icon' => 'fa-calendar-plus',
                         'color' => 'text-blue-600',
                         'bg_color' => 'bg-blue-100',
-                        'url' => route('photographer.dashboard') . '#bookings'
+                        'url' => route('photographer.dashboard.index') . '#bookings'
                     ];
                 });
 

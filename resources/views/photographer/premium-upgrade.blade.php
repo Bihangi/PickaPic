@@ -7,7 +7,7 @@
     <div class="max-w-6xl mx-auto px-4 py-8">
         {{-- Back Arrow --}}
         <div class="mb-6">
-            <a href="{{ route('photographer.dashboard') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors">
+            <a href="{{ route('photographer.dashboard.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i>
                 <span class="font-medium">Back to Dashboard</span>
             </a>

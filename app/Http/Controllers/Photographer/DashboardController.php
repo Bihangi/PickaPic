@@ -472,7 +472,7 @@ class DashboardController extends Controller
                         'icon' => 'fa-calendar-plus',
                         'color' => 'text-blue-600',
                         'bg_color' => 'bg-blue-100',
-                        'url' => route('photographer.dashboard') . '#bookings'
+                        'url' => route('photographer.dashboard.index') . '#bookings'
                     ];
                 });
             
@@ -517,7 +517,7 @@ class DashboardController extends Controller
                         'icon' => 'fa-check-circle',
                         'color' => 'text-green-600',
                         'bg_color' => 'bg-green-100',
-                        'url' => route('photographer.dashboard') . '#bookings'
+                        'url' => route('photographer.dashboard.index') . '#bookings'
                     ];
                 });
             

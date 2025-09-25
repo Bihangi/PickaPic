@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('photographer.dashboard') }}" class="text-white hover:text-gray-200">
+                    <a href="{{ route('photographer.dashboard.index') }}" class="text-white hover:text-gray-200">
                         <i class="fas fa-arrow-left text-xl"></i>
                     </a>
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">

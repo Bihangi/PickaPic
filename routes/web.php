@@ -107,18 +107,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     })->name('logout');
 });
 
-// Photographer Authentication
+// Photographer Authentication Routes (NO PREFIX CONFLICTS)
 Route::get('/photographer/login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration - FIXED DUPLICATE NAMES
-Route::prefix('photographer')->name('photographer.')->group(function () {
-    Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register.form');
-    Route::post('/register', [PhotographerRegisterController::class, 'register'])->name('register.submit');
-});
+// Photographer Registration Routes (SEPARATED - NO CONFLICTS)
+Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register.form');
+Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
 
-// Alternative photographer registration form - RENAMED TO AVOID CONFLICT
+// Alternative photographer registration form - COMPLETELY SEPARATE
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
@@ -170,9 +168,9 @@ Route::post('/register/photographer', function (Request $request) {
 // Verification Pending
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
 
-// Photographer Dashboard
-Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->group(function () {
-    Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('dashboard');
+// Photographer Dashboard and Protected Routes (SINGLE GROUP WITH UNIQUE PREFIX)
+Route::middleware(['auth'])->prefix('photographer')->name('photographer.dashboard.')->group(function () {
+    Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('index');
     Route::get('/calendar', [PhotographerDashboardController::class, 'calendar'])->name('calendar');
     Route::post('/profile/update', [PhotographerDashboardController::class, 'updateProfile'])->name('profile.update');
 
@@ -295,7 +293,7 @@ Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(functio
     Route::post('/create', [ChatController::class, 'createConversation'])->name('create');
 });
 
-// Standalone chat unread count route - RENAMED TO AVOID CONFLICT
+// Standalone chat unread count route
 Route::get('/api/chat/unread-count', [ChatController::class, 'unreadCount'])
     ->name('api.chat.unreadCount')
     ->middleware('auth');
@@ -306,7 +304,7 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::delete('/messages/{message}', [ChatController::class, 'deleteMessage'])->name('messages.delete');
 });
 
-// Broadcasting Auth Route 
+// Broadcasting Auth Route
 Route::middleware(['auth', 'web'])->group(function () {
     \Illuminate\Support\Facades\Broadcast::routes();
 });
@@ -315,7 +313,7 @@ Route::middleware(['auth', 'web'])->group(function () {
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Laravel Breeze Auth Routes 
+// Laravel Breeze Auth Routes
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('auth.register');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('auth.register.store');
