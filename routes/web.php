@@ -296,7 +296,7 @@ Route::middleware(['auth'])->post('/availabilities/{id}/book', [AvailabilityCont
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/photographers/{photographerId}/availability', [AvailabilityController::class, 'getPhotographerAvailability']);
     Route::get('/photographers/{photographerId}/availability/date', [AvailabilityController::class, 'getAvailabilityByDate']);
-    Route::post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('availabilities.book');
+    Route::post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('api.availabilities.book');
     
     // Package pricing calculation
     Route::post('/packages/{package}/calculate-price', [PackageController::class, 'calculatePrice'])->name('api.packages.calculate_price');
