@@ -140,10 +140,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listen for new messages to update conversation list
     @auth
-    window.Echo.private('users.{{ Auth::id() }}')
-        .listen('MessageSent', (e) => {
-            window.location.reload();
-        });
+    if (window.Echo) {
+        window.Echo.private('users.{{ Auth::id() }}')
+            .listen('MessageSent', (e) => {
+                // Check for unread count updates
+                fetch('{{ route("api.chat.unreadCount") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.unread_count > 0) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error fetching unread count:', error));
+            });
+    }
     @endauth
 });
 </script>

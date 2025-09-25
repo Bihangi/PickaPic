@@ -213,7 +213,6 @@
 
             <!-- Selected Photographer Info -->
             <div id="selected-photographer-info" class="mb-4 p-3 bg-gray-50 rounded-lg">
-                <!-- Will be populated with selected photographer info -->
             </div>
 
             <!-- Message Form -->
@@ -315,14 +314,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load photographers
+    // Load photographers using the updated route
     async function loadPhotographers() {
         try {
             loadingPhotographers.classList.remove('hidden');
             photographersList.classList.add('hidden');
             noPhotographers.classList.add('hidden');
 
-            const response = await fetch('/api/photographers/available', {
+            const response = await fetch('{{ route("api.photographers.available") }}', {
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
@@ -405,8 +404,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         div.addEventListener('click', function() {
             if (hasExistingConversation) {
-                // Redirect to existing conversation
-                window.location.href = `/chat/${photographer.existing_conversation_id}`;
+                // Redirect to existing conversation using the correct route
+                window.location.href = `{{ url('/chat') }}/${photographer.existing_conversation_id}`;
             } else {
                 // Open message composer
                 selectedPhotographer = photographer;
@@ -455,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
         displayPhotographers(filteredPhotographers);
     });
 
-    // Handle form submission
+    // Handle form submission using the correct route
     newConversationForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -470,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const formData = new FormData(this);
             
-            const response = await fetch('/chat/create', {
+            const response = await fetch('{{ route("chat.create") }}', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -540,12 +539,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     @endif
 
-    // Listen for new messages to update conversation list
+    // Listen for new messages to update conversation list using the corrected route
     @auth
-    window.Echo.private('users.{{ Auth::id() }}')
-        .listen('MessageSent', (e) => {
-            window.location.reload();
-        });
+    if (window.Echo) {
+        window.Echo.private('users.{{ Auth::id() }}')
+            .listen('MessageSent', (e) => {
+                // Check for unread count updates using the new route name
+                fetch('{{ route("api.chat.unreadCount") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update unread count in UI if needed
+                        if (data.unread_count > 0) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error fetching unread count:', error));
+            });
+    }
     @endauth
 });
 </script>

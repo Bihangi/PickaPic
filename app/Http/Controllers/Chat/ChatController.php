@@ -251,11 +251,11 @@ class ChatController extends Controller
         }
     }
 
-    public function getAvailablePhotographers() { /* same as your second version */ }
-    public function showPhotographers() { /* same as your second version */ }
-    public function getUnreadCount() { /* same as your second version */ }
-    public function getPhotographerConversations() { /* same as your second version */ }
-    public function getPhotographerUnreadCount() { /* same as your second version */ }
+    public function getAvailablePhotographers() { }
+    public function showPhotographers() { }
+    public function getUnreadCount() {  }
+    public function getPhotographerConversations() {  }
+    public function getPhotographerUnreadCount() { }
 
     /**
      * Notifications (from first version)

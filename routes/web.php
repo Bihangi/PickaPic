@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\PendingRegistration;
 use App\Models\User;
-use App\Models\Package;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\ClientLoginController;
 use App\Http\Controllers\Auth\ClientRegisterController;
@@ -17,8 +16,6 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\Auth\PhotographerLoginController;
 use App\Http\Controllers\Auth\PhotographerRegisterController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\PhotographerController;
 use App\Http\Controllers\Admin\PendingRegistrationController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -33,76 +30,76 @@ use App\Http\Controllers\Photographer\DashboardController as PhotographerDashboa
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Chat\ChatController;
 
+// Import missing auth controllers
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+
 // Home Page
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', fn () => view('welcome'))->name('home');
 
 // Admin Login
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
 
-// Admin Routes 
+// Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard'); 
-    
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
     // User Management
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::delete('/users/{id}', [UserController::class, 'remove'])->name('users.remove');
     Route::post('/users/{id}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
     Route::post('/users/{id}/activate', [UserController::class, 'activate'])->name('users.activate');
-    
+
     // Pending Registrations
     Route::get('/pending', [PendingRegistrationController::class, 'index'])->name('pending');
     Route::post('/pending/verify/{id}', [PendingRegistrationController::class, 'verify'])->name('pending.verify');
     Route::delete('/pending/reject/{id}', [PendingRegistrationController::class, 'reject'])->name('pending.reject');
-    
+
     // Photographer Management
     Route::get('/photographers', [PhotographerController::class, 'index'])->name('photographers.index');
     Route::post('/photographers/verify/{id}', [PhotographerController::class, 'verify'])->name('photographers.verify');
     Route::delete('/photographers/remove/{id}', [PhotographerController::class, 'remove'])->name('photographers.remove');
     Route::post('/photographers/{id}/suspend', [PhotographerController::class, 'suspend'])->name('photographers.suspend');
     Route::post('/photographers/{id}/activate', [PhotographerController::class, 'activate'])->name('photographers.activate');
-    
+
     // Booking Management
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update_status');
-    Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update_status.patch');
-    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
-    Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy'); 
+    Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+    Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
     Route::get('/bookings/export/csv', [AdminBookingController::class, 'exportCsv'])->name('bookings.export');
     Route::get('/bookings/filter/status/{status}', [AdminBookingController::class, 'filterByStatus'])->name('bookings.filter');
-    
-    // Review Management 
+
+    // Review Management
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::get('/reviews/{review}', [AdminReviewController::class, 'show'])->name('reviews.show');
     Route::patch('/reviews/{review}/toggle-visibility', [AdminReviewController::class, 'toggleVisibility'])->name('reviews.toggleVisibility');
-    
-    // Reports & Analytics
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/bookings', [ReportController::class, 'bookings'])->name('reports.bookings');
-    Route::get('/reports/revenue', [ReportController::class, 'revenue'])->name('reports.revenue');
-    Route::get('/reports/users', [ReportController::class, 'users'])->name('reports.users');
-    Route::get('/reports/photographers', [ReportController::class, 'photographers'])->name('reports.photographers');
-    
+
     // Premium Management Routes
     Route::prefix('premium')->name('premium.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\PremiumController::class, 'index'])->name('index');
         Route::get('/statistics', [App\Http\Controllers\Admin\PremiumController::class, 'statistics'])->name('statistics');
         Route::get('/expiring', [App\Http\Controllers\Admin\PremiumController::class, 'expiringSoon'])->name('expiring');
-        
+
         Route::prefix('requests')->name('requests.')->group(function () {
             Route::get('/{premiumRequest}', [App\Http\Controllers\Admin\PremiumController::class, 'show'])->name('show');
             Route::post('/{premiumRequest}/approve', [App\Http\Controllers\Admin\PremiumController::class, 'approve'])->name('approve');
-            Route::post('/{premiumRequest}/reject', [App\Http\Controllers\Admin\PremiumController::class, 'reject'])->name('reject');
             Route::post('/{premiumRequest}/extend', [App\Http\Controllers\Admin\PremiumController::class, 'extend'])->name('extend');
             Route::post('/{premiumRequest}/revoke', [App\Http\Controllers\Admin\PremiumController::class, 'revoke'])->name('revoke');
             Route::get('/{premiumRequest}/download-slip', [App\Http\Controllers\Admin\PremiumController::class, 'downloadPaymentSlip'])->name('download_slip');
         });
     });
 
-    Route::post('/logout', function (\Illuminate\Http\Request $request) {
+    Route::post('/logout', function (Request $request) {
         \Illuminate\Support\Facades\Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -115,18 +112,18 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration - FIXED: Combined routes with single group
+// Photographer Registration - FIXED DUPLICATE NAMES
 Route::prefix('photographer')->name('photographer.')->group(function () {
-    Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register.form');
     Route::post('/register', [PhotographerRegisterController::class, 'register'])->name('register.submit');
 });
 
-// Alternative photographer registration form route (for verified users) - FIXED: Different name
+// Alternative photographer registration form - RENAMED TO AVOID CONFLICT
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.alt');
+})->name('photographer.register.alternative');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -168,41 +165,35 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.register.alt.store');
+})->name('photographer.register.alternative.store');
 
-// Verification Pending Views
-Route::view('/verification-pending', 'auth.verification_pending')->name('auth.verification_pending');
+// Verification Pending
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
 
-// Photographer Dashboard 
+// Photographer Dashboard
 Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->group(function () {
-    // Dashboard
     Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('dashboard');
-    
-    // Calendar
     Route::get('/calendar', [PhotographerDashboardController::class, 'calendar'])->name('calendar');
-    
-    // Profile Management
     Route::post('/profile/update', [PhotographerDashboardController::class, 'updateProfile'])->name('profile.update');
-    
-    // Portfolio Management  
+
+    // Portfolio
     Route::post('/portfolio/upload', [PhotographerDashboardController::class, 'uploadPortfolio'])->name('portfolio.upload');
     Route::put('/portfolio/{id}', [PhotographerDashboardController::class, 'updatePortfolio'])->name('portfolio.update');
     Route::delete('/portfolio/{id}', [PhotographerDashboardController::class, 'deletePortfolio'])->name('portfolio.delete');
-    
-    // Availability Management
+
+    // Availability
     Route::post('/availabilities', [AvailabilityController::class, 'store'])->name('availabilities.store');
     Route::put('/availabilities/{id}', [AvailabilityController::class, 'update'])->name('availabilities.update');
     Route::get('/availabilities/events', [AvailabilityController::class, 'events'])->name('availabilities.events');
     Route::delete('/availabilities/{availability}', [AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
-    
-    // Booking Management
+
+    // Bookings
     Route::get('/bookings', [BookingController::class, 'photographerBookings'])->name('bookings.index');
     Route::get('/bookings/{bookingId}', [PhotographerDashboardController::class, 'getBookingDetails'])->name('bookings.details');
     Route::post('/bookings/{bookingId}/status', [PhotographerDashboardController::class, 'updateBookingStatus'])->name('bookings.update_status');
     Route::delete('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-    
-    // Package Management 
+
+    // Packages
     Route::get('/packages', [PackageController::class, 'myPackages'])->name('packages.index');
     Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
     Route::get('/packages/{package}/edit', [PackageController::class, 'edit'])->name('packages.edit');
@@ -210,12 +201,12 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
     Route::post('/packages/{package}', [PackageController::class, 'update'])->name('packages.update.post');
     Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
-    // Premium upgrade routes
+    // Premium
     Route::get('/premium', [\App\Http\Controllers\Photographer\PremiumController::class, 'index'])->name('premium.index');
     Route::post('/premium/request', [\App\Http\Controllers\Photographer\PremiumController::class, 'store'])->name('premium.request');
     Route::get('/premium/status', [\App\Http\Controllers\Photographer\PremiumController::class, 'status'])->name('premium.status');
     Route::get('/premium/requests/{premiumRequest}', [\App\Http\Controllers\Photographer\PremiumController::class, 'show'])->name('premium.show');
-    
+
     // Notifications
     Route::get('/notifications', [PhotographerDashboardController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/mark-read', [PhotographerDashboardController::class, 'markNotificationsAsRead'])->name('notifications.mark-read');
@@ -225,7 +216,7 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('auth.google.callback');
 
-// Profile Management (auth required)
+// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -235,7 +226,7 @@ Route::middleware('auth')->group(function () {
 // Choose Role
 Route::view('/choose-role', 'auth.choose-role')->name('choose.role');
 
-// Client Routes
+// Client
 Route::prefix('client')->name('client.')->group(function () {
     Route::get('register', [ClientRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('register', [ClientRegisterController::class, 'register']);
@@ -243,87 +234,70 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('login', [ClientLoginController::class, 'login'])->name('login.submit');
     Route::post('logout', [ClientLoginController::class, 'logout'])->name('logout');
 
-    // Profile routes
     Route::post('/profile/update', [App\Http\Controllers\Client\DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::get('/bookings', [App\Http\Controllers\Client\DashboardController::class, 'getBookings'])->name('bookings');
     Route::get('/booking/{booking}', [App\Http\Controllers\Client\DashboardController::class, 'getBookingDetails'])->name('booking.details');
 });
 
 // Client Dashboard
-Route::get('/client/client-dashboard', function () {
-    return view('client.client-dashboard');
-})->middleware('auth')->name('client.dashboard');
+Route::get('/client/client-dashboard', fn () => view('client.client-dashboard'))
+    ->middleware('auth')->name('client.dashboard');
 
 // Public Pages
 Route::view('/about', 'client.about')->name('about');
-Route::get('/categories', function () {
-    return view('client.categories');
-})->name('categories');
+Route::get('/categories', fn () => view('client.categories'))->name('categories');
 
-// Photographer Listings (Public)
+// Photographer Listings
 Route::prefix('photographers')->group(function () {
     Route::get('/', [ClientPhotographerController::class, 'index'])->name('photographers.index');
     Route::get('/{id}', [ClientPhotographerController::class, 'show'])->name('photographers.show');
-    
-    // Reviews
     Route::post('/{photographer}/reviews', [ClientPhotographerController::class, 'storeReview'])
-         ->middleware('auth')
-         ->name('reviews.store');
+        ->middleware('auth')->name('reviews.store');
 });
 
-// Booking Routes (require authentication)
+// Booking (auth required)
 Route::middleware(['auth'])->group(function () {
-    // Booking creation and management
     Route::get('/book/{photographer}/package/{package?}', [BookingController::class, 'create'])->name('book.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
     Route::get('/bookings/{booking}/success', [BookingController::class, 'success'])->name('bookings.success');
     Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
     Route::delete('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-    
-    // Package API routes for dynamic loading
+
     Route::get('/api/photographers/{photographer}/packages', [PackageController::class, 'index'])->name('api.packages.index');
-    
-    // Booking status update (consolidated)
     Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });
 
 // Client booking availability
 Route::middleware(['auth'])->post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('availabilities.book');
 
-// API Routes for availability and photographers
+// API Routes
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/photographers/{photographerId}/availability', [AvailabilityController::class, 'getPhotographerAvailability']);
     Route::get('/photographers/{photographerId}/availability/date', [AvailabilityController::class, 'getAvailabilityByDate']);
-    
-    // Package pricing calculation
     Route::post('/packages/{package}/calculate-price', [PackageController::class, 'calculatePrice'])->name('api.packages.calculate_price');
-    
-    // Available photographers for chat 
     Route::get('/photographers/available', [ChatController::class, 'getAvailablePhotographers'])->name('api.photographers.available');
-    
-    // Photographer conversations
     Route::get('/photographer/conversations', [ChatController::class, 'getPhotographerConversations'])->name('api.photographer.conversations');
 });
 
-// Public API routes 
+// Public API
 Route::prefix('api')->group(function () {
     Route::get('/photographers/{photographerId}/availability/public', [AvailabilityController::class, 'getPhotographerAvailability']);
 });
 
-// Chat Routes (consolidated and cleaned up)
+// Chat
 Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/', [ChatController::class, 'index'])->name('index');
     Route::get('/photographers', [ChatController::class, 'showPhotographers'])->name('photographers');
-    Route::get('/unread-count', [ChatController::class, 'getUnreadCount'])->name('unread-count');
+    Route::get('/unread-count', [ChatController::class, 'unreadCount'])->name('unreadCount');
     Route::get('/{conversation}', [ChatController::class, 'show'])->name('show');
     Route::post('/{conversation}/send', [ChatController::class, 'sendMessage'])->name('send');
     Route::post('/create', [ChatController::class, 'createConversation'])->name('create');
 });
 
-// Standalone chat unread count route (if needed for AJAX calls)
-Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])
-    ->name('chat.unreadCount')
+// Standalone chat unread count route - RENAMED TO AVOID CONFLICT
+Route::get('/api/chat/unread-count', [ChatController::class, 'unreadCount'])
+    ->name('api.chat.unreadCount')
     ->middleware('auth');
 
 // Message Routes
@@ -333,55 +307,36 @@ Route::middleware(['auth', 'web'])->group(function () {
 });
 
 // Broadcasting Auth Route 
-Broadcast::routes(['middleware' => ['auth', 'web']]);
+Route::middleware(['auth', 'web'])->group(function () {
+    \Illuminate\Support\Facades\Broadcast::routes();
+});
 
 // Contact Routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
+// Laravel Breeze Auth Routes 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
-    Route::post('register', [RegisteredUserController::class, 'store']);
-
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
-
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
-
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
-
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('auth.register');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('auth.register.store');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('auth.login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('auth.login.store');
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('verify-email', EmailVerificationPromptController::class)
-        ->name('verification.notice');
-
+    Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
-
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
-
+    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
-
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
