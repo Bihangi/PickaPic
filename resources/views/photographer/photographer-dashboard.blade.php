@@ -24,6 +24,14 @@
                         <span id="message-badge" class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </a>
                     
+                    {{-- Notifications Button --}}
+                    <button class="relative p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <i class="fas fa-bell text-xl"></i>
+                        @if($stats['pending_bookings'] > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ $stats['pending_bookings'] }}</span>
+                        @endif
+                    </button>
+                    
                     {{-- Profile Dropdown --}}
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
@@ -114,123 +122,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- Premium Package Section --}}
-        @if(!$photographer->isPremium() && !$photographer->hasPendingPremiumRequest())
-            {{-- Premium Upgrade Banner --}}
-            <div class="mb-8">
-                <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-8 text-white relative overflow-hidden border border-gray-700">
-                    {{-- Background pattern --}}
-                    <div class="absolute inset-0 opacity-10">
-                        <div class="absolute top-4 left-4">
-                            <i class="fas fa-crown text-6xl"></i>
-                        </div>
-                        <div class="absolute bottom-4 right-4">
-                            <i class="fas fa-star text-4xl"></i>
-                        </div>
-                        <div class="absolute top-1/2 right-1/4 transform -translate-y-1/2">
-                            <i class="fas fa-medal text-5xl"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="relative z-10">
-                        <div class="flex flex-col lg:flex-row items-center justify-between">
-                            <div class="flex-1 mb-6 lg:mb-0">
-                                <div class="flex items-center mb-4">
-                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-                                        <i class="fas fa-crown text-yellow-400 text-xl"></i>
-                                    </div>
-                                    <h3 class="text-2xl font-bold">Become a TOP Photographer!</h3>
-                                </div>
-                                
-                                <p class="text-lg mb-4 text-gray-200">
-                                    Get featured at the top of search results and attract 300% more clients
-                                </p>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
-                                        <span class="text-sm text-gray-200">Priority listing with TOP badge</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
-                                        <span class="text-sm text-gray-200">Increased profile visibility</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
-                                        <span class="text-sm text-gray-200">Premium support & analytics</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="flex flex-wrap items-center text-sm text-gray-300">
-                                    <span class="mr-4 mb-2">
-                                        <i class="fas fa-tag mr-1"></i>
-                                        Starting from Rs. 2,500/month
-                                    </span>
-                                    <span class="mr-4 mb-2">
-                                        <i class="fas fa-users mr-1"></i>
-                                        Join {{ App\Models\Photographer::whereHas('activePremiumRequest')->count() }}+ featured photographers
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-col space-y-3">
-                                <a href="{{ route('photographer.premium.index') }}" 
-                                class="bg-white text-gray-900 px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
-                                    <i class="fas fa-crown mr-2 text-yellow-500"></i>
-                                    Upgrade Now
-                                </a>
-                                <p class="text-center text-sm text-gray-300">
-                                    Special launch offer available
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @elseif($photographer->hasPendingPremiumRequest())
-            {{-- Pending Request Status --}}
-            <div class="mb-8">
-                <div class="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-clock text-gray-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-800 mb-1">Premium Request Under Review</h3>
-                            <p class="text-gray-600">
-                                Your premium upgrade request is being processed. We'll notify you once it's approved (usually within 24 hours).
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
-            {{-- Active Premium Status --}}
-            <div class="mb-8">
-                <div class="bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl p-6 text-white border border-gray-600">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-crown text-yellow-400 text-xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-bold mb-1">You're a TOP Photographer!</h3>
-                                <p class="text-gray-200">
-                                    Premium expires: {{ $photographer->getPremiumExpiryDate()->format('M d, Y') }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex space-x-3">
-                            <a href="{{ route('photographer.premium.index') }}" 
-                            class="bg-white text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                                Extend Premium
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {{-- Left Sidebar --}}
@@ -418,11 +309,14 @@
                             <button onclick="switchTab('availability')" class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 text-sm">
                                 Availability Slots
                             </button>
+                            <button onclick="switchTab('messages')" class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 text-sm">
+                                Messages
+                            </button>
                         </nav>
                     </div>
 
                     {{-- Recent Bookings Tab --}}
-                    <div id="bookings-tab" class="tab-content p-6">
+                                        <div id="bookings-tab" class="tab-content p-6">
                         @if($bookings->where('status', '!=', 'pending')->count() > 0)
                             <div class="space-y-4">
                                 @foreach($bookings->where('status', '!=', 'pending')->take(5) as $booking)
@@ -576,6 +470,28 @@
                                 </button>
                             </div>
                         @endif
+                    </div>
+
+                    {{-- Messages Tab --}}
+                    <div id="messages-tab" class="tab-content p-6 hidden">
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Recent Messages</h3>
+                        </div>
+
+                        <div id="conversations-list">
+                            {{-- Conversations will be loaded here via AJAX --}}
+                            <div class="text-center py-8">
+                                <i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-500">Loading conversations...</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <a href="{{ route('chat.index') }}" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-lg transition-colors inline-flex items-center">
+                                <i class="fas fa-comments mr-2"></i>
+                                View All Messages
+                            </a>
+                        </div>
                     </div>
                     
                     {{-- Availability Tab --}}
@@ -848,7 +764,7 @@
                             <input type="text" name="name" value="${packageData.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required>
                         </div>
                         <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">Price (Rs.)</label>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Price ($)</label>
                             <input type="number" name="price" value="${packageData.price}" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required>
                         </div>
                         <div class="mb-6">
@@ -931,6 +847,85 @@
         }
     }
 
+    // Load conversations for messages tab
+    function loadConversations() {
+        fetch('/api/photographer/conversations', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const conversationsList = document.getElementById('conversations-list');
+            if (data.success && data.conversations.length > 0) {
+                conversationsList.innerHTML = data.conversations.map(conversation => `
+                    <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                                    <span class="text-white font-semibold">${conversation.client_name.charAt(0)}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${conversation.client_name}</h4>
+                                    <p class="text-sm text-gray-600">${conversation.last_message || 'No messages yet'}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${conversation.unread_count > 0 ? 
+                                    `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">${conversation.unread_count}</span>` : 
+                                    ''
+                                }
+                                <a href="/chat/${conversation.id}" class="text-gray-600 hover:text-gray-800 text-sm">
+                                    Reply
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                conversationsList.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
+                        <p class="text-gray-500">Client messages will appear here when they contact you.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading conversations:', error);
+            document.getElementById('conversations-list').innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                    <p class="text-red-600">Error loading conversations</p>
+                </div>
+            `;
+        });
+    }
+
+    // Load message count
+    function loadMessageCount() {
+        fetch('/chat/unread-count', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('message-badge');
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error loading message count:', error));
+    }
+
     function editAvailability(availabilityId) {
         // Open edit modal with pre-filled data
         openAddAvailability();
@@ -1006,31 +1001,15 @@
         }, 5000);
     }
 
-    // Load message count
-    function loadMessageCount() {
-        fetch('/chat/unread-count', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const badge = document.getElementById('message-badge');
-            if (data.count > 0) {
-                badge.textContent = data.count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        })
-        .catch(error => console.error('Error loading message count:', error));
-    }
-
     // Initialize dashboard
     document.addEventListener('DOMContentLoaded', function() {
         switchTab('bookings');
         loadMessageCount();
+        
+        // Load conversations when messages tab is clicked
+        document.querySelector('button[onclick="switchTab(\'messages\')"]').addEventListener('click', function() {
+            loadConversations();
+        });
         
         // Refresh message count every 30 seconds
         setInterval(loadMessageCount, 30000);

@@ -228,7 +228,7 @@
               <div class="flex justify-between items-center">
                 <span class="text-gray-600">Base Package:</span>
                 <span class="font-semibold" id="base-price">
-                  {{ $selectedPackage ? $selectedPackage->formatted_price : 'Select package' }}
+                  {{ $selectedPackage ? 'Rs. ' . number_format($selectedPackage->price, 2) : 'Select package' }}
                 </span>
               </div>
               <div class="flex justify-between items-center" id="additional-hours-row" style="display: none;">
@@ -239,7 +239,7 @@
               <div class="flex justify-between items-center text-lg">
                 <span class="font-bold">Total:</span>
                 <span class="font-bold text-xl" id="total-price">
-                  {{ $selectedPackage ? $selectedPackage->formatted_price : 'LKR 0' }}
+                  {{ $selectedPackage ? 'Rs. ' . number_format($selectedPackage->price, 2) : 'Rs. 0.00' }}
                 </span>
               </div>
             </div>
