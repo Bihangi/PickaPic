@@ -68,11 +68,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update_status');
-    Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update_status.patch'); 
+    Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update_status.patch');
+    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
     Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy'); 
     Route::get('/bookings/export/csv', [AdminBookingController::class, 'exportCsv'])->name('bookings.export');
     Route::get('/bookings/filter/status/{status}', [AdminBookingController::class, 'filterByStatus'])->name('bookings.filter');
-
+    
     // Review Management 
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
     Route::get('/reviews/{review}', [AdminReviewController::class, 'show'])->name('reviews.show');
@@ -85,7 +86,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/reports/users', [ReportController::class, 'users'])->name('reports.users');
     Route::get('/reports/photographers', [ReportController::class, 'photographers'])->name('reports.photographers');
     
-    // Premium management routes
+    // Premium Management Routes
     Route::prefix('premium')->name('premium.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\PremiumController::class, 'index'])->name('index');
         Route::get('/statistics', [App\Http\Controllers\Admin\PremiumController::class, 'statistics'])->name('statistics');
@@ -109,21 +110,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     })->name('logout');
 });
 
-// Photographer Authentication & Registration
+// Photographer Authentication
 Route::get('/photographer/login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Main photographer registration routes (using controller)
-Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register.form');
+// Photographer Registration - Combined and cleaned up
+Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register');
 Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
 
-// Alternative photographer registration path (different URI with different names)
+// Alternative photographer registration form route (for verified users)
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.registration.alternative.form');
+})->name('photographer.register.form');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -165,13 +166,13 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.registration.alternative.store');
+})->name('photographer.register.store');
 
 // Verification Pending Views
 Route::view('/verification-pending', 'auth.verification_pending')->name('auth.verification_pending');
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
 
-// Photographer Dashboard Routes
+// Photographer Dashboard 
 Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('dashboard');
@@ -208,12 +209,10 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
     Route::delete('/packages/{package}', [PackageController::class, 'destroy'])->name('packages.destroy');
 
     // Premium upgrade routes
-    Route::prefix('premium')->name('premium.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Photographer\PremiumController::class, 'index'])->name('index');
-        Route::post('/request', [\App\Http\Controllers\Photographer\PremiumController::class, 'store'])->name('request');
-        Route::get('/status', [\App\Http\Controllers\Photographer\PremiumController::class, 'status'])->name('status');
-        Route::get('/requests/{premiumRequest}', [\App\Http\Controllers\Photographer\PremiumController::class, 'show'])->name('show');
-    });
+    Route::get('/premium', [\App\Http\Controllers\Photographer\PremiumController::class, 'index'])->name('premium.index');
+    Route::post('/premium/request', [\App\Http\Controllers\Photographer\PremiumController::class, 'store'])->name('premium.request');
+    Route::get('/premium/status', [\App\Http\Controllers\Photographer\PremiumController::class, 'status'])->name('premium.status');
+    Route::get('/premium/requests/{premiumRequest}', [\App\Http\Controllers\Photographer\PremiumController::class, 'show'])->name('premium.show');
     
     // Notifications
     Route::get('/notifications', [PhotographerDashboardController::class, 'getNotifications'])->name('notifications');
@@ -282,6 +281,9 @@ Route::middleware(['auth'])->group(function () {
     
     // Package API routes for dynamic loading
     Route::get('/api/photographers/{photographer}/packages', [PackageController::class, 'index'])->name('api.packages.index');
+    
+    // Booking status update (consolidated)
+    Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });
 
 // Client booking availability
@@ -291,7 +293,6 @@ Route::middleware(['auth'])->post('/availabilities/{id}/book', [AvailabilityCont
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/photographers/{photographerId}/availability', [AvailabilityController::class, 'getPhotographerAvailability']);
     Route::get('/photographers/{photographerId}/availability/date', [AvailabilityController::class, 'getAvailabilityByDate']);
-    Route::post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('api.availabilities.book');
     
     // Package pricing calculation
     Route::post('/packages/{package}/calculate-price', [PackageController::class, 'calculatePrice'])->name('api.packages.calculate_price');
@@ -308,7 +309,7 @@ Route::prefix('api')->group(function () {
     Route::get('/photographers/{photographerId}/availability/public', [AvailabilityController::class, 'getPhotographerAvailability']);
 });
 
-// Chat Routes
+// Chat Routes (consolidated and cleaned up)
 Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/', [ChatController::class, 'index'])->name('index');
     Route::get('/photographers', [ChatController::class, 'showPhotographers'])->name('photographers');
@@ -318,6 +319,7 @@ Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(functio
     Route::post('/create', [ChatController::class, 'createConversation'])->name('create');
 });
 
+// Standalone chat unread count route (if needed for AJAX calls)
 Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])
     ->name('chat.unreadCount')
     ->middleware('auth');
@@ -331,6 +333,7 @@ Route::middleware(['auth', 'web'])->group(function () {
 // Broadcasting Auth Route 
 Broadcast::routes(['middleware' => ['auth', 'web']]);
 
+// Contact Routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
