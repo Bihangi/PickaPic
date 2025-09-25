@@ -109,23 +109,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     })->name('logout');
 });
 
-// Photographer Authentication
+// Photographer Authentication & Registration
 Route::get('/photographer/login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration 
-Route::prefix('photographer')->name('photographer.')->group(function () {
-    Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [PhotographerRegisterController::class, 'register'])->name('register.submit');
-});
+// Main photographer registration routes
+Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register');
+Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
 
-// Alternative photographer registration routes 
+// Alternative photographer registration path (completely different URI to avoid conflicts)
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.form.alt');
+})->name('register.photographer.form');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -167,13 +165,13 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.register.store.alt');
+})->name('register.photographer.store');
 
 // Verification Pending Views
 Route::view('/verification-pending', 'auth.verification_pending')->name('auth.verification_pending');
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
 
-// Photographer Dashboard 
+// Photographer Dashboard Routes
 Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('dashboard');
@@ -226,7 +224,7 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('auth.google.callback');
 
-// Profile Management 
+// Profile Management (auth required)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -261,7 +259,7 @@ Route::get('/categories', function () {
     return view('client.categories');
 })->name('categories');
 
-// Photographer Listings
+// Photographer Listings (Public)
 Route::prefix('photographers')->group(function () {
     Route::get('/', [ClientPhotographerController::class, 'index'])->name('photographers.index');
     Route::get('/{id}', [ClientPhotographerController::class, 'show'])->name('photographers.show');
