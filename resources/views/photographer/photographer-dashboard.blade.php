@@ -2,272 +2,463 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        {{-- Header Section --}}
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
-            <p class="text-gray-600">Welcome back, {{ $photographer->name }}! Manage your photography business here.</p>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="min-h-screen bg-gray-50">
+    {{-- Header --}}
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="w-8 h-8">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">PickaPic Dashboard</h1>
+                        <p class="text-gray-100">Welcome back, {{ $photographer->user->name }}!</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {{-- Messages Button --}}
+                    <a href="{{ route('chat.index') }}" class="relative p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <i class="fas fa-comments text-xl"></i>
+                        <span id="message-badge" class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </a>
+                    
+                    {{-- Profile Dropdown --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
+                            @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
+                                <img src="{{ asset('storage/'.$photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                            @else
+                                <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-700 flex items-center justify-center">
+                                    <span class="text-white font-bold">{{ substr($photographer->user->name, 0, 1) }}</span>
+                                </div>
+                            @endif
+                            <span class="font-medium">{{ $photographer->user->name }}</span>
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </button>
+                        
+                        {{-- Dropdown Menu --}}
+                        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                            <button onclick="openEditProfile()" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center">
+                                <i class="fas fa-user-edit mr-2"></i>
+                                Edit Profile
+                            </button>
+                            <hr class="my-1">
+                            <form method="POST" action="{{ route('photographer.logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </header>
 
+    <div class="max-w-7xl mx-auto px-4 py-8">
         {{-- Stats Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
-                    <div class="bg-blue-500 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift border-l-4 border-gray-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Total Bookings</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ $stats['total_bookings'] }}</p>
+                        <p class="text-green-600 text-sm"><i class="fas fa-arrow-up"></i> Active</p>
                     </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Total Bookings</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $bookings->count() }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
-                    <div class="bg-green-500 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Confirmed</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $bookings->where('status', 'confirmed')->count() }}</p>
+                    <div class="bg-gray-100 p-3 rounded-full">
+                        <i class="fas fa-calendar-alt text-gray-800 text-xl"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
-                    <div class="bg-yellow-500 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Pending Bookings</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ $stats['pending_bookings'] }}</p>
+                        <p class="text-orange-600 text-sm">{{ $stats['pending_bookings'] > 0 ? 'Require attention' : 'All clear' }}</p>
                     </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Pending</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $bookings->where('status', 'pending')->count() }}</p>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-clock text-green-600 text-xl"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
-                    <div class="bg-purple-500 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift border-l-4 border-gray-600">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Portfolio Items</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ $stats['portfolio_items'] }}</p>
+                        <p class="text-gray-600 text-sm">Showcase ready</p>
                     </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Portfolio Items</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $portfolios->count() }}</p>
+                    <div class="bg-gray-100 p-3 rounded-full">
+                        <i class="fas fa-images text-gray-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift border-l-4 border-yellow-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Available Slots</p>
+                        <p class="text-3xl font-bold text-gray-800">{{ $stats['available_slots'] }}</p>
+                        <p class="text-yellow-600 text-sm">Ready for booking</p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <i class="fas fa-calendar-check text-yellow-600 text-xl"></i>
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- Premium Package Section --}}
+        @if(!$photographer->isPremium() && !$photographer->hasPendingPremiumRequest())
+            {{-- Premium Upgrade Banner --}}
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-8 text-white relative overflow-hidden border border-gray-700">
+                    {{-- Background pattern --}}
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute top-4 left-4">
+                            <i class="fas fa-crown text-6xl"></i>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <i class="fas fa-star text-4xl"></i>
+                        </div>
+                        <div class="absolute top-1/2 right-1/4 transform -translate-y-1/2">
+                            <i class="fas fa-medal text-5xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex flex-col lg:flex-row items-center justify-between">
+                            <div class="flex-1 mb-6 lg:mb-0">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-crown text-yellow-400 text-xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold">Become a TOP Photographer!</h3>
+                                </div>
+                                
+                                <p class="text-lg mb-4 text-gray-200">
+                                    Get featured at the top of search results and attract 300% more clients
+                                </p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        <span class="text-sm text-gray-200">Priority listing with TOP badge</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        <span class="text-sm text-gray-200">Increased profile visibility</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2 text-green-400"></i>
+                                        <span class="text-sm text-gray-200">Premium support & analytics</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-wrap items-center text-sm text-gray-300">
+                                    <span class="mr-4 mb-2">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        Starting from Rs. 2,500/month
+                                    </span>
+                                    <span class="mr-4 mb-2">
+                                        <i class="fas fa-users mr-1"></i>
+                                        Join {{ App\Models\Photographer::whereHas('activePremiumRequest')->count() }}+ featured photographers
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col space-y-3">
+                                <a href="{{ route('photographer.premium.index') }}" 
+                                class="bg-white text-gray-900 px-8 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+                                    <i class="fas fa-crown mr-2 text-yellow-500"></i>
+                                    Upgrade Now
+                                </a>
+                                <p class="text-center text-sm text-gray-300">
+                                    Special launch offer available
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @elseif($photographer->hasPendingPremiumRequest())
+            {{-- Pending Request Status --}}
+            <div class="mb-8">
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-clock text-gray-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-800 mb-1">Premium Request Under Review</h3>
+                            <p class="text-gray-600">
+                                Your premium upgrade request is being processed. We'll notify you once it's approved (usually within 24 hours).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @else
+            {{-- Active Premium Status --}}
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl p-6 text-white border border-gray-600">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-crown text-yellow-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold mb-1">You're a TOP Photographer!</h3>
+                                <p class="text-gray-200">
+                                    Premium expires: {{ $photographer->getPremiumExpiryDate()->format('M d, Y') }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="{{ route('photographer.premium.index') }}" 
+                            class="bg-white text-gray-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                Extend Premium
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {{-- Profile Section --}}
-            <div class="lg:col-span-3">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="p-6 text-center border-b border-gray-200">
+            {{-- Left Sidebar --}}
+            <div class="lg:col-span-3 space-y-6">
+                {{-- Profile Card --}}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="gradient-bg p-6 text-white text-center">
                         <div class="relative inline-block">
                             @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
-                                <img src="{{ asset('storage/'.$photographer->profile_image) }}" 
-                                    class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" 
-                                    alt="Profile">
+                                <img src="{{ asset('storage/'.$photographer->profile_image) }}" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white mx-auto object-cover">
                             @else
-                                <img src="{{ Vite::asset('resources/images/default-avatar.jpg') }}" 
-                                    class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" 
-                                    alt="Default Profile">
+                                <div class="w-20 h-20 rounded-full border-4 border-white mx-auto bg-gray-700 flex items-center justify-center">
+                                    <span class="text-white font-bold text-2xl">{{ substr($photographer->user->name, 0, 1) }}</span>
+                                </div>
                             @endif
-                            <div class="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+                            <button onclick="openEditProfile()" class="absolute bottom-0 right-0 bg-white text-gray-600 p-1 rounded-full shadow-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-pencil-alt text-sm"></i>
+                            </button>
                         </div>
-                        <h3 class="mt-4 text-xl font-semibold text-gray-900">{{ $photographer->name }}</h3>
-                        <p class="text-sm text-gray-600">{{ $photographer->contact }}</p>
+                        <h3 class="text-xl font-bold mt-3">{{ $photographer->user->name }}</h3>
+                        <p class="text-gray-100">Professional Photographer</p>
                         @if($photographer->location)
-                            <p class="text-sm text-gray-500 mt-1">📍 {{ $photographer->location }}</p>
+                            <div class="flex items-center justify-center mt-2 text-gray-100">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <span>{{ $photographer->location }}</span>
+                            </div>
                         @endif
                     </div>
-
-                    {{-- Social Links --}}
-                    @if($photographer->instagram || $photographer->facebook || $photographer->website)
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3">Connect</h4>
-                            <div class="flex space-x-3">
-                                @if($photographer->instagram)
-                                    <a href="{{ $photographer->instagram }}" target="_blank" 
-                                       class="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:shadow-lg transition-shadow">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                        </svg>
-                                    </a>
-                                @endif
-                                @if($photographer->facebook)
-                                    <a href="{{ $photographer->facebook }}" target="_blank" 
-                                       class="flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full hover:shadow-lg transition-shadow">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                        </svg>
-                                    </a>
-                                @endif
-                                @if($photographer->website)
-                                    <a href="{{ $photographer->website }}" target="_blank" 
-                                       class="flex items-center justify-center w-10 h-10 bg-gray-600 text-white rounded-full hover:shadow-lg transition-shadow">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9m9 9a9 9 0 01-9 9"></path>
-                                        </svg>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Edit Profile Toggle --}}
+                    
                     <div class="p-6">
-                        <button onclick="toggleProfileEdit()" 
-                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200">
-                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                            </svg>
-                            Edit Profile
-                        </button>
+                        <div class="space-y-3">
+                            @if($photographer->contact)
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-phone w-5"></i>
+                                    <span class="ml-3">{{ $photographer->contact }}</span>
+                                </div>
+                            @endif
+                            @if($photographer->experience)
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-star w-5"></i>
+                                    <span class="ml-3">{{ $photographer->experience }} years experience</span>
+                                </div>
+                            @endif
+                            @if($photographer->languages)
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-language w-5"></i>
+                                    <span class="ml-3">{{ $photographer->languages }}</span>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        @if($photographer->instagram || $photographer->facebook || $photographer->website)
+                            <div class="mt-6">
+                                <h4 class="font-semibold text-gray-800 mb-3">Social Links</h4>
+                                <div class="flex space-x-3">
+                                    @if($photographer->instagram)
+                                        <a href="{{ $photographer->instagram }}" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-2 rounded-full hover:shadow-lg transition-shadow">
+                                            <i class="fab fa-instagram"></i>
+                                        </a>
+                                    @endif
+                                    @if($photographer->facebook)
+                                        <a href="{{ $photographer->facebook }}" target="_blank" class="bg-blue-600 text-white p-2 rounded-full hover:shadow-lg transition-shadow">
+                                            <i class="fab fa-facebook"></i>
+                                        </a>
+                                    @endif
+                                    @if($photographer->website)
+                                        <a href="{{ $photographer->website }}" target="_blank" class="bg-gray-600 text-white p-2 rounded-full hover:shadow-lg transition-shadow">
+                                            <i class="fas fa-globe"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
                     </div>
+                </div>
 
-                    {{-- Hidden Edit Profile Form --}}
-                    <div id="profile-edit-form" class="hidden border-t border-gray-200 p-6">
-                        <form action="{{ route('photographer.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                            @csrf
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                                <input type="text" name="name" value="{{ $photographer->name }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Contact</label>
-                                <input type="text" name="contact" value="{{ $photographer->contact }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                                <input type="text" name="location" value="{{ $photographer->location }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Instagram URL</label>
-                                <input type="url" name="instagram" value="{{ $photographer->instagram }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Facebook URL</label>
-                                <input type="url" name="facebook" value="{{ $photographer->facebook }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
-                                <input type="url" name="website" value="{{ $photographer->website }}" 
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Profile Image</label>
-                                <input type="file" name="profile_image" accept="image/*"
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div class="flex space-x-3">
-                                <button type="submit" 
-                                        class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                                    Save Changes
-                                </button>
-                                <button type="button" onclick="toggleProfileEdit()" 
-                                        class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
+                {{-- Quick Actions --}}
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button onclick="openAddAvailability()" class="w-full bg-gray-800 hover:bg-gray-900 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Availability
+                        </button>
+                        <button onclick="openPortfolioUpload()" class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload Photos
+                        </button>
+                        <a href="{{ route('photographer.calendar') }}" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                            <i class="fas fa-calendar mr-2"></i>
+                            View Calendar
+                        </a>
                     </div>
                 </div>
             </div>
 
             {{-- Main Content --}}
-            <div class="lg:col-span-6">
-                {{-- Quick Add Availability --}}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900">Quick Add Availability</h3>
-                        <p class="text-sm text-gray-600 mt-1">Add new availability slots</p>
-                    </div>
-                    <div class="p-6">
-                        <form id="quick-add-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            @csrf
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                                <input type="date" name="date" required
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            <div class="lg:col-span-9 space-y-8">
+                {{-- Pending Bookings --}}
+                @if($pendingBookings->count() > 0)
+                    <div class="bg-white rounded-xl shadow-lg">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-bold text-gray-800">Pending Bookings</h2>
+                                <span class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">{{ $pendingBookings->count() }} Pending</span>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
-                                <input type="time" name="start_time" required
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                @foreach($pendingBookings as $booking)
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                                                        <span class="text-white font-semibold">{{ substr($booking->client_name ?? ($booking->user->name ?? 'Client'), 0, 1) }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="font-semibold text-gray-800">{{ $booking->client_name ?? $booking->user->name ?? 'Client Name Not Available' }}</h4>
+                                                        <p class="text-gray-600 text-sm">
+                                                            {{ $booking->client_location ?? ($booking->user->location ?? 'Location not specified') }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-3">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-calendar mr-2 text-gray-600"></i>
+                                                        <span>{{ $booking->event_date ? \Carbon\Carbon::parse($booking->event_date)->format('M d, Y') : 'TBD' }}</span>
+                                                    </div>
+                                                    @if($booking->start_time)
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-clock mr-2 text-green-500"></i>
+                                                            <span>
+                                                                {{ $booking->start_time ? \Carbon\Carbon::parse($booking->start_time)->format('h:i A') : 'TBD' }} - 
+                                                                {{ $booking->end_time ? \Carbon\Carbon::parse($booking->end_time)->format('h:i A') : 'TBD' }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                    @if($booking->client_location)
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                                            <span>{{ $booking->client_location }}</span>
+                                                        </div>
+                                                    @endif
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-camera mr-2 text-gray-600"></i>
+                                                        <span>{{ $booking->package->name ?? 'Custom Package' }}</span>
+                                                    </div>
+                                                </div>
+                                                @if($booking->notes)
+                                                    <p class="text-gray-700 text-sm">"{{ $booking->notes }}"</p>
+                                                @endif
+                                            </div>
+                                            <div class="flex space-x-2 ml-4">
+                                                <button onclick="confirmBooking({{ $booking->id }})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                                    <i class="fas fa-check mr-1"></i>
+                                                    Accept
+                                                </button>
+                                                <button onclick="declineBooking({{ $booking->id }})" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                                    <i class="fas fa-times mr-1"></i>
+                                                    Decline
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                                <input type="time" name="end_time" required
-                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            </div>
-                            <div class="flex items-end">
-                                <button type="submit" 
-                                        class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Add Slot
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Right Sidebar --}}
-            <div class="lg:col-span-3 space-y-8">
-                {{-- Recent Bookings --}}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
-                            <span class="text-sm text-gray-500">{{ $bookings->count() }} total</span>
                         </div>
                     </div>
-                    <div class="p-6">
-                        @if($bookings->count() > 0)
-                            <div class="space-y-4 max-h-80 overflow-y-auto">
-                                @foreach($bookings->take(5) as $booking)
-                                    <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h4 class="font-medium text-gray-900">{{ $booking->client_name ?? 'Client' }}</h4>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $booking->status === 'confirmed' ? 'bg-green-100 text-green-800' : 
-                                                   ($booking->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
+                @endif
+
+                {{-- Tabbed Content --}}
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex space-x-8 px-6">
+                            <button onclick="switchTab('bookings')" class="tab-btn py-4 px-1 border-b-2 border-gray-800 font-medium text-gray-800 text-sm">
+                                Recent Bookings
+                            </button>
+                            <button onclick="switchTab('portfolio')" class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 text-sm">
+                                Portfolio Gallery
+                            </button>
+                            <button onclick="switchTab('packages')" class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 text-sm">
+                                Package Management
+                            </button>
+                            <button onclick="switchTab('availability')" class="tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 text-sm">
+                                Availability Slots
+                            </button>
+                        </nav>
+                    </div>
+
+                    {{-- Recent Bookings Tab --}}
+                    <div id="bookings-tab" class="tab-content p-6">
+                        @if($bookings->where('status', '!=', 'pending')->count() > 0)
+                            <div class="space-y-4">
+                                @foreach($bookings->where('status', '!=', 'pending')->take(5) as $booking)
+                                    <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
+                                                    <span class="text-white font-semibold">{{ substr($booking->client_name ?? ($booking->user->name ?? 'Client'), 0, 1) }}</span>
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-800">{{ $booking->client_name ?? $booking->user->name ?? 'Client Name Not Available' }}</h4>
+                                                    <p class="text-gray-600 text-sm">{{ $booking->package->name ?? 'Custom Package' }}</p>
+                                                </div>
+                                            </div>
+                                            <span class="bg-{{ $booking->status === 'confirmed' ? 'green' : ($booking->status === 'completed' ? 'gray' : 'gray') }}-100 text-{{ $booking->status === 'confirmed' ? 'green' : ($booking->status === 'completed' ? 'gray' : 'gray') }}-800 px-3 py-1 rounded-full text-sm font-medium">
                                                 {{ ucfirst($booking->status) }}
                                             </span>
                                         </div>
-                                        <div class="text-sm text-gray-600 space-y-1">
+                                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600">
                                             <div class="flex items-center">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                </svg>
-                                                {{ $booking->date }} {{ $booking->start_time ? ' • '.$booking->start_time : '' }}
+                                                <i class="fas fa-calendar mr-2"></i>
+                                                <span>{{ $booking->event_date ? \Carbon\Carbon::parse($booking->event_date)->format('M d, Y') : 'TBD' }}</span>
                                             </div>
-                                            @if($booking->location)
+                                            @if($booking->start_time)
                                                 <div class="flex items-center">
-                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    </svg>
-                                                    {{ $booking->location }}
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    <span>
+                                                        {{ $booking->start_time ? \Carbon\Carbon::parse($booking->start_time)->format('h:i A') : 'TBD' }} - 
+                                                        {{ $booking->end_time ? \Carbon\Carbon::parse($booking->end_time)->format('h:i A') : 'TBD' }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            @if($booking->client_location)
+                                                <div class="flex items-center">
+                                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                                    <span>{{ $booking->client_location }}</span>
                                                 </div>
                                             @endif
                                         </div>
@@ -275,75 +466,177 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="text-center py-8">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900">No bookings yet</h3>
-                                <p class="mt-1 text-sm text-gray-500">Your bookings will appear here when clients book your services.</p>
+                            <div class="text-center py-12">
+                                <div class="bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-2xl text-gray-400"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No Recent Bookings</h3>
+                                <p class="text-gray-500 mb-4">You don't have any confirmed or completed bookings yet.</p>
+                                <p class="text-sm text-gray-400">When clients book your services and they're confirmed, they'll appear here.</p>
                             </div>
                         @endif
                     </div>
-                </div>
 
-                {{-- Portfolio Section --}}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900">Portfolio</h3>
-                        <p class="text-sm text-gray-600 mt-1">Showcase your best work</p>
-                    </div>
-                    <div class="p-6">
-                        {{-- Upload Form --}}
-                        <form action="{{ route('photographer.portfolio.upload') }}" method="POST" enctype="multipart/form-data" class="mb-6">
-                            @csrf
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <div class="mt-4">
-                                    <label for="portfolio-upload" class="cursor-pointer">
-                                        <span class="mt-2 block text-sm font-medium text-gray-900">Upload photos</span>
-                                        <span class="mt-1 block text-sm text-gray-600">PNG, JPG, GIF up to 10MB each</span>
-                                        <input id="portfolio-upload" name="files[]" type="file" multiple accept="image/*" class="sr-only">
-                                    </label>
+                    {{-- Portfolio Tab --}}
+                    <div id="portfolio-tab" class="tab-content p-6 hidden">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Portfolio Gallery</h3>
+                            <button onclick="openPortfolioUpload()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Photos
+                            </button>
+                        </div>
+                        
+                        @if($portfolios->count() > 0)
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                @foreach($portfolios as $portfolio)
+                                    <div class="portfolio-item group relative">
+                                        <img src="{{ asset('storage/'.$portfolio->file_path) }}" alt="{{ $portfolio->title ?? 'Portfolio' }}" class="w-full h-full object-cover rounded-lg">
+                                        <div class="portfolio-overlay">
+                                            <div class="text-white">
+                                                <h4 class="font-semibold">{{ $portfolio->title ?? 'Untitled' }}</h4>
+                                                @if($portfolio->is_featured)
+                                                    <p class="text-sm text-yellow-300">
+                                                        <i class="fas fa-star mr-1"></i>Featured Photo
+                                                    </p>
+                                                @endif
+                                                @if($portfolio->description)
+                                                    <p class="text-sm text-gray-200 mt-1">{{ Str::limit($portfolio->description, 50) }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                            <button onclick="editPortfolioItem({{ $portfolio->id }})" class="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-900 transition-colors">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <button onclick="deletePortfolioItem({{ $portfolio->id }})" class="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                
+                                {{-- Upload placeholder --}}
+                                <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-gray-400 transition-colors cursor-pointer" onclick="openPortfolioUpload()">
+                                    <i class="fas fa-plus text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500 text-sm text-center">Upload New Photo</p>
                                 </div>
-                                <button type="submit" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                                    Upload Images
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <i class="fas fa-images text-4xl text-gray-400 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No portfolio items yet</h3>
+                                <p class="text-gray-500 mb-4">Upload your best work to showcase your photography skills.</p>
+                                <button onclick="openPortfolioUpload()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-lg transition-colors">
+                                    Upload Your First Photo
                                 </button>
                             </div>
-                        </form>
+                        @endif
+                    </div>
 
-                        {{-- Portfolio Grid --}}
-                        @if($portfolios->count() > 0)
-                            <div class="grid grid-cols-2 gap-3">
-                                @foreach($portfolios->take(6) as $portfolio)
-                                    <div class="relative group aspect-square">
-                                        <img src="{{ asset('storage/'.$portfolio->file_path) }}" 
-                                             class="w-full h-full object-cover rounded-lg border border-gray-200" alt="Portfolio">
-                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-all duration-200 flex items-center justify-center">
-                                            <form action="{{ route('photographer.portfolio.delete', $portfolio->id) }}" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Are you sure you want to delete this image?')" 
-                                                  class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" 
-                                                        class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
+                    {{-- Package Management Tab --}}
+                    <div id="packages-tab" class="tab-content p-6 hidden">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Package Management</h3>
+                            <button onclick="openAddPackage()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Package
+                            </button>
+                        </div>
+
+                        @if(isset($packages) && $packages->count() > 0)
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach($packages as $package)
+                                    <div class="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <h4 class="font-bold text-lg text-gray-800">{{ $package->name }}</h4>
+                                            <div class="flex space-x-2">
+                                                <button onclick="editPackage({{ $package->id }})" class="text-gray-600 hover:text-gray-800">
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
-                                            </form>
+                                                <button onclick="deletePackage({{ $package->id }})" class="text-red-600 hover:text-red-800">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <p class="text-2xl font-bold text-gray-800">Rs. {{ number_format($package->price, 2) }}</p>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-4">{{ $package->description }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <i class="fas fa-box text-4xl text-gray-400 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No packages yet</h3>
+                                <p class="text-gray-500 mb-4">Create your first package to offer clients different pricing options.</p>
+                                <button onclick="openAddPackage()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-lg transition-colors">
+                                    Create Your First Package
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    {{-- Availability Tab --}}
+                    <div id="availability-tab" class="tab-content p-6 hidden">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-800">Availability Slots</h3>
+                            <button onclick="openAddAvailability()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Slot
+                            </button>
+                        </div>
+
+                        @if($availabilities->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($availabilities->take(10) as $availability)
+                                    <div class="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="bg-{{ $availability->status === 'available' ? 'green' : 'orange' }}-100 p-3 rounded-full">
+                                                <i class="fas fa-calendar text-{{ $availability->status === 'available' ? 'green' : 'orange' }}-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-gray-800">
+                                                    {{ $availability->date ? \Carbon\Carbon::parse($availability->date)->format('M d, Y') : 'Invalid Date' }}
+                                                </p>
+                                                <p class="text-gray-600 text-sm">
+                                                    {{ $availability->start_time ? \Carbon\Carbon::parse($availability->start_time)->format('h:i A') : 'TBD' }} - 
+                                                    {{ $availability->end_time ? \Carbon\Carbon::parse($availability->end_time)->format('h:i A') : 'TBD' }}
+                                                </p>
+                                            </div>
+                                            <span class="bg-{{ $availability->status === 'available' ? 'green' : 'orange' }}-100 text-{{ $availability->status === 'available' ? 'green' : 'orange' }}-800 px-3 py-1 rounded-full text-sm font-medium">
+                                                {{ ucfirst($availability->status) }}
+                                            </span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            @if($availability->status === 'available')
+                                                <button onclick="editAvailability({{ $availability->id }})" class="text-gray-600 hover:text-gray-800 p-2">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="deleteAvailability({{ $availability->id }})" class="text-red-600 hover:text-red-800 p-2">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @else
+                                                <button class="text-gray-400 p-2 cursor-not-allowed" disabled>
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-gray-400 p-2 cursor-not-allowed" disabled>
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         @else
                             <div class="text-center py-8">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900">No portfolio items yet</h3>
-                                <p class="mt-1 text-sm text-gray-500">Upload your best work to showcase your photography skills.</p>
+                                <i class="fas fa-calendar-plus text-4xl text-gray-400 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No availability slots yet</h3>
+                                <p class="text-gray-500 mb-4">Add your available time slots so clients can book your services.</p>
+                                <button onclick="openAddAvailability()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                                    Add Your First Slot
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -351,220 +644,410 @@
             </div>
         </div>
     </div>
+
+    {{-- Include Modals --}}
+    @include('photographer.modals.edit-profile')
+    @include('photographer.modals.add-availability')
+    @include('photographer.modals.portfolio-upload')
+    @include('photographer.modals.add-package')
+
+    {{-- Notification Container --}}
+    <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 </div>
 
-<script>
-// Profile Edit Toggle
-function toggleProfileEdit() {
-    const form = document.getElementById('profile-edit-form');
-    form.classList.toggle('hidden');
-}
+{{-- Add Alpine.js for dropdown functionality --}}
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{{-- Add CSRF token meta tag --}}
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
-// Quick Add Availability Form Submission
-document.addEventListener('DOMContentLoaded', function() {
-    const quickAddForm = document.getElementById('quick-add-form');
-    if (quickAddForm) {
-        quickAddForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            
-            // Validate times
-            const startTime = formData.get('start_time');
-            const endTime = formData.get('end_time');
-            
-            if (startTime >= endTime) {
-                showNotification('End time must be after start time', 'error');
-                return;
+{{-- Styles --}}
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #374151 0%, #111827 100%);
+    }
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    .portfolio-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        aspect-ratio: 1;
+    }
+    .portfolio-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(45deg, rgba(0,0,0,0.8), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: end;
+        padding: 20px;
+    }
+    .portfolio-item:hover .portfolio-overlay {
+        opacity: 1;
+    }
+</style>
+
+{{-- Scripts --}}
+<script>
+    // Tab Switching
+    function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+        
+        // Remove active styles from all tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('border-gray-800', 'text-gray-800');
+            btn.classList.add('border-transparent', 'text-gray-500');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabName + '-tab').classList.remove('hidden');
+        
+        // Add active styles to selected tab button
+        event.target.classList.remove('border-transparent', 'text-gray-500');
+        event.target.classList.add('border-gray-800', 'text-gray-800');
+    }
+
+    // Modal Functions
+    function openEditProfile() {
+        document.getElementById('edit-profile-modal').classList.remove('hidden');
+    }
+
+    function openAddAvailability() {
+        document.getElementById('add-availability-modal').classList.remove('hidden');
+    }
+
+    function openPortfolioUpload() {
+        document.getElementById('portfolio-upload-modal').classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // Booking Management Functions
+    function confirmBooking(bookingId) {
+        if (confirm('Are you sure you want to confirm this booking?')) {
+            updateBookingStatus(bookingId, 'confirmed');
+        }
+    }
+
+    function declineBooking(bookingId) {
+        if (confirm('Are you sure you want to decline this booking?')) {
+            updateBookingStatus(bookingId, 'declined');
+        }
+    }
+
+    function updateBookingStatus(bookingId, status) {
+        fetch(`/photographer/bookings/${bookingId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message, 'error');
             }
-            
-            submitBtn.innerHTML = '<svg class="animate-spin w-4 h-4 inline mr-2" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75"></path></svg>Adding...';
-            submitBtn.disabled = true;
-            
-            // Convert FormData to JSON
-            const jsonData = {};
-            for (let [key, value] of formData.entries()) {
-                jsonData[key] = value;
-            }
-            
-            fetch('{{ route("photographer.availabilities.store") }}', {
-                method: 'POST',
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred', 'error');
+        });
+    }
+
+    // Portfolio Management Functions
+    function editPortfolioItem(portfolioId) {
+        // Implement edit functionality
+        console.log('Edit portfolio item:', portfolioId);
+    }
+
+    function deletePortfolioItem(portfolioId) {
+        if (confirm('Are you sure you want to delete this portfolio item?')) {
+            fetch(`/photographer/portfolio/${portfolioId}`, {
+                method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Accept': 'application/json'
-                },
-                body: JSON.stringify(jsonData)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
                 }
-                return response.json();
             })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     showNotification(data.message, 'success');
-                    this.reset();
+                    setTimeout(() => location.reload(), 1500);
                 } else {
-                    showNotification(data.message || 'Error adding availability', 'error');
+                    showNotification(data.message, 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Error adding availability', 'error');
-            })
-            .finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                showNotification('An error occurred', 'error');
             });
+        }
+    }
+
+    // Package Management Functions
+    function openAddPackage() {
+        document.getElementById('add-package-modal').classList.remove('hidden');
+    }
+
+    function editPackage(packageId) {
+        // Fetch package data and populate edit modal
+        fetch(`/photographer/packages/${packageId}/edit`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create and show edit modal with package data
+                showEditPackageModal(data.package);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred while loading package data', 'error');
         });
     }
-});
 
-// Notification System
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification fixed top-4 right-4 z-50 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5`;
-    
-    const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 
-                   type === 'error' ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200';
-    const textColor = type === 'success' ? 'text-green-800' : 
-                     type === 'error' ? 'text-red-800' : 'text-blue-800';
-    const iconColor = type === 'success' ? 'text-green-400' : 
-                     type === 'error' ? 'text-red-400' : 'text-blue-400';
-    
-    notification.innerHTML = `
-        <div class="p-4 ${bgColor} border rounded-lg">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    ${type === 'success' ? `
-                        <svg class="h-5 w-5 ${iconColor}" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                    ` : type === 'error' ? `
-                        <svg class="h-5 w-5 ${iconColor}" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                        </svg>
-                    ` : `
-                        <svg class="h-5 w-5 ${iconColor}" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                        </svg>
-                    `}
+    function showEditPackageModal(packageData) {
+        // Create modal HTML
+        const modalHtml = `
+            <div id="edit-package-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Edit Package</h3>
+                        <button onclick="closeModal('edit-package-modal')" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <form id="edit-package-form" onsubmit="updatePackage(event, ${packageData.id})">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Package Name</label>
+                            <input type="text" name="name" value="${packageData.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Price (Rs.)</label>
+                            <input type="number" name="price" value="${packageData.price}" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                            <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500" required>${packageData.description}</textarea>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="closeModal('edit-package-modal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded-lg transition-colors">
+                                Update Package
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm font-medium ${textColor}">${message}</p>
-                </div>
-                <div class="ml-auto pl-3">
-                    <div class="-mx-1.5 -my-1.5">
-                        <button onclick="this.closest('.notification').remove()" 
-                                class="inline-flex rounded-md p-1.5 ${textColor} hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <span class="sr-only">Dismiss</span>
-                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                            </svg>
+            </div>
+        `;
+        
+        // Remove existing edit modal if any
+        const existingModal = document.getElementById('edit-package-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    function updatePackage(event, packageId) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        
+        fetch(`/photographer/packages/${packageId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                closeModal('edit-package-modal');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('An error occurred', 'error');
+        });
+    }
+
+    function deletePackage(packageId) {
+        if (confirm('Are you sure you want to delete this package?')) {
+            fetch(`/photographer/packages/${packageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('An error occurred', 'error');
+            });
+        }
+    }
+
+    function editAvailability(availabilityId) {
+        // Open edit modal with pre-filled data
+        openAddAvailability();
+    }
+
+    function deleteAvailability(availabilityId) {
+        if (confirm('Are you sure you want to delete this availability slot?')) {
+            fetch(`/photographer/availabilities/${availabilityId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('An error occurred', 'error');
+            });
+        }
+    }
+
+    // Notification System
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        const notification = document.createElement('div');
+        notification.className = `notification fixed top-4 right-4 z-50 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5`;
+        
+        const bgColor = type === 'success' ? 'bg-green-50 border-green-200' : 
+                       type === 'error' ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200';
+        const textColor = type === 'success' ? 'text-green-800' : 
+                         type === 'error' ? 'text-red-800' : 'text-blue-800';
+        const iconColor = type === 'success' ? 'text-green-400' : 
+                         type === 'error' ? 'text-red-400' : 'text-blue-400';
+        
+        notification.innerHTML = `
+            <div class="p-4 ${bgColor} border rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        ${type === 'success' ? `<i class="fas fa-check-circle ${iconColor}"></i>` : 
+                          type === 'error' ? `<i class="fas fa-exclamation-circle ${iconColor}"></i>` : 
+                          `<i class="fas fa-info-circle ${iconColor}"></i>`}
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium ${textColor}">${message}</p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="this.closest('.notification').remove()" class="inline-flex rounded-md p-1.5 ${textColor} hover:bg-gray-100">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Auto-remove notification after 5 seconds
-    setTimeout(() => {
-        if (notification && notification.parentNode) {
-            notification.remove();
-        }
-    }, 5000);
-}
-
-// Handle file upload preview
-document.addEventListener('DOMContentLoaded', function() {
-    const portfolioUpload = document.getElementById('portfolio-upload');
-    if (portfolioUpload) {
-        portfolioUpload.addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-                showNotification(`${files.length} file(s) selected for upload`, 'info');
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification && notification.parentNode) {
+                notification.remove();
             }
-        });
+        }, 5000);
     }
-});
 
-// Success/Error message display from Laravel
-@if(session('success'))
+    // Load message count
+    function loadMessageCount() {
+        fetch('/chat/unread-count', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('message-badge');
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        })
+        .catch(error => console.error('Error loading message count:', error));
+    }
+
+    // Initialize dashboard
     document.addEventListener('DOMContentLoaded', function() {
+        switchTab('bookings');
+        loadMessageCount();
+        
+        // Refresh message count every 30 seconds
+        setInterval(loadMessageCount, 30000);
+    });
+
+    // Handle Laravel flash messages
+    @if(session('success'))
         showNotification('{{ session('success') }}', 'success');
-    });
-@endif
+    @endif
 
-@if(session('error'))
-    document.addEventListener('DOMContentLoaded', function() {
+    @if(session('error'))
         showNotification('{{ session('error') }}', 'error');
-    });
-@endif
+    @endif
 
-@if($errors->any())
-    document.addEventListener('DOMContentLoaded', function() {
+    @if($errors->any())
         showNotification('{{ $errors->first() }}', 'error');
-    });
-@endif
+    @endif
 </script>
 
-{{-- Custom CSS for better styling --}}
-<style>
-/* Smooth transitions */
-.transition-all {
-    transition: all 0.3s ease;
-}
-
-/* Hover effects for cards */
-.hover\:shadow-lg:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Custom scrollbar */
-.overflow-auto::-webkit-scrollbar {
-    width: 6px;
-}
-
-.overflow-auto::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-}
-
-.overflow-auto::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-}
-
-.overflow-auto::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* Animation for notifications */
-.notification {
-    animation: slideInRight 0.3s ease-out;
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-</style>
 @endsection

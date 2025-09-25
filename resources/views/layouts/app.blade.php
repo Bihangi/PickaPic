@@ -66,10 +66,6 @@
                             </svg>
                             <span class="hidden sm:inline font-medium text-sm">Messages</span>
                             
-                            <!-- Notification Badge -->
-                            <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 transform scale-0 transition-all duration-200 shadow-lg notification-badge" style="display: none;">
-                                0
-                            </span>
                         </a>
                     </div>
                     @endauth
@@ -89,8 +85,6 @@
                         <!-- Dropdown menu -->
                         <div class="absolute right-0 top-full mt-2 w-45 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
                             <div class="py-2 text-gray-800">
-                                <a href="#" class="block px-12 py-2 text-sm hover:bg-gray-100 transition-colors">Profile</a>
-                                <hr class="my-1">
                                 
                                 <!-- Logout -->
                                 <form method="POST" action="{{ route('client.logout') }}">
@@ -154,7 +148,7 @@
         @yield('content')
     </main>
 
-    {{-- Footer (if you have one) --}}
+
     @include('layouts.footer')
 
     {{-- Notification Scripts --}}

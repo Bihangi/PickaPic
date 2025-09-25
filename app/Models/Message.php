@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
-    protected $fillable = ['conversation_id', 'sender_id', 'body', 'read_at'];
+    protected $fillable = ['conversation_id', 'sender_id', 'body', 'attachment', 'is_read'];
     protected $casts = [
-    'created_at' => 'datetime',
-    'read_at' => 'datetime',
+        'created_at' => 'datetime',
+        'is_read' => 'boolean',
     ];
 
     public $timestamps = true;

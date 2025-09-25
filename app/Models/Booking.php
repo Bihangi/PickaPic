@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -58,6 +59,14 @@ class Booking extends Model
     public function scopeByStatus($query, string $status)
     {
         return $query->where('status', $status);
+    }
+
+    /**
+     * Get all availabilities booked under this booking
+     */
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(Availability::class);
     }
 
     /**

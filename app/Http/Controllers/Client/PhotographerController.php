@@ -7,17 +7,114 @@ use Illuminate\Http\Request;
 use App\Models\Photographer;
 use App\Models\Availability;
 use App\Models\Review;
+use App\Models\PremiumRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PhotographerController extends Controller
 {
     /**
      * Display a listing of photographers with comprehensive filters.
+     * Split into sections: premium, nearby, and others (no duplicates).
      */
     public function index(Request $request)
     {
-        $query = Photographer::query();
+        // Get the current user's location if logged in
+        $userLocation = null;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $userLocation = $user->location;
+            Log::info('User Location: ' . ($userLocation ?? 'null'));
+        }
+        
+        // Base query for all photographers with ratings and reviews
+        $baseQuery = Photographer::query()
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating');
 
+        // Apply search filters
+        $this->applyFilters($baseQuery, $request);
+
+        // 1. Get Premium Photographers first
+        $premiumQuery = clone $baseQuery;
+        $premiumPhotographers = $premiumQuery
+            ->whereHas('premiumRequests', function($q) {
+                $q->approved()
+                ->where(function($q2) {
+                    $q2->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                });
+            })
+            ->orderBy('reviews_avg_rating', 'desc')
+            ->orderBy('reviews_count', 'desc')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        Log::info('Premium photographers: ' . $premiumPhotographers->count());
+
+        // 2. Get Nearby Photographers (excluding premium ones)
+        $nearbyPhotographers = collect();
+        if ($userLocation) {
+            $premiumIds = $premiumPhotographers->pluck('id')->toArray();
+            
+            // Try exact match first
+            $nearbyQuery = clone $baseQuery;
+            $nearbyPhotographers = $nearbyQuery
+                ->where('location', $userLocation)
+                ->whereNotIn('id', $premiumIds) // Exclude premium photographers
+                ->orderBy('reviews_avg_rating', 'desc')
+                ->orderBy('reviews_count', 'desc')
+                ->orderBy('name', 'asc')
+                ->get();
+
+            Log::info('Nearby photographers (exact match): ' . $nearbyPhotographers->count());
+
+            // If no exact matches, try partial match
+            if ($nearbyPhotographers->isEmpty()) {
+                $nearbyQuery = clone $baseQuery;
+                $nearbyPhotographers = $nearbyQuery
+                    ->where('location', 'LIKE', "%{$userLocation}%")
+                    ->whereNotIn('id', $premiumIds) // Exclude premium photographers
+                    ->orderBy('reviews_avg_rating', 'desc')
+                    ->orderBy('reviews_count', 'desc')
+                    ->orderBy('name', 'asc')
+                    ->get();
+
+                Log::info('Nearby photographers (partial match): ' . $nearbyPhotographers->count());
+            }
+        }
+
+        // 3. Get Other Photographers (excluding both premium and nearby)
+        $excludeIds = array_merge(
+            $premiumPhotographers->pluck('id')->toArray(),
+            $nearbyPhotographers->pluck('id')->toArray()
+        );
+
+        $otherQuery = clone $baseQuery;
+        if (!empty($excludeIds)) {
+            $otherQuery->whereNotIn('id', $excludeIds);
+        }
+
+        $otherPhotographers = $otherQuery
+            ->orderBy('reviews_avg_rating', 'desc')
+            ->orderBy('reviews_count', 'desc')
+            ->orderBy('name', 'asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Debug: Log final counts
+        Log::info('Final counts - Premium: ' . $premiumPhotographers->count() . 
+                 ', Nearby: ' . $nearbyPhotographers->count() . 
+                 ', Others: ' . $otherPhotographers->count());
+
+        return view('client.photographers', compact('premiumPhotographers', 'nearbyPhotographers', 'otherPhotographers'));
+    }
+
+    /**
+     * Apply filters to the photographer query
+     */
+    private function applyFilters($query, Request $request)
+    {
         // Search by name, location, or bio
         if ($request->filled('q')) {
             $searchTerm = $request->q;
@@ -26,11 +123,6 @@ class PhotographerController extends Controller
                   ->orWhere('location', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('bio', 'LIKE', "%{$searchTerm}%");
             });
-        }
-
-        // Filter by location
-        if ($request->filled('location')) {
-            $query->where('location', 'LIKE', "%{$request->location}%");
         }
 
         // Categories filter (SET column)
@@ -53,25 +145,15 @@ class PhotographerController extends Controller
             });
         }
 
-        // Filter by availability date
-        if ($request->filled('date')) {
-            $query->whereHas('availabilities', function($q) use ($request) {
-                $q->where('date', $request->date)
-                  ->where('status', 'available');
+        // Availability filter
+        if ($request->filled('availability')) {
+            $availabilitySlots = $request->availability;
+            $query->where(function($q) use ($availabilitySlots) {
+                foreach ($availabilitySlots as $slot) {
+                    $q->orWhere('availability', 'LIKE', "%{$slot}%");
+                }
             });
         }
-
-        // Add reviews count and average rating
-        $query->withCount('reviews')
-              ->withAvg('reviews', 'rating');
-
-        $photographers = $query->orderBy('reviews_avg_rating', 'desc')
-                               ->orderBy('reviews_count', 'desc')
-                               ->orderBy('name', 'asc')
-                               ->paginate(10)
-                               ->withQueryString();
-
-        return view('client.photographers', compact('photographers'));
     }
 
     /**
@@ -124,7 +206,6 @@ class PhotographerController extends Controller
 
         return back()->with('success', 'Review added successfully!');
     }
-
 
     /**
      * API endpoint to get photographer's availability.

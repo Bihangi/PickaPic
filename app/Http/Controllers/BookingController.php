@@ -104,13 +104,28 @@ class BookingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('client.dashboard')->with('success', 
-                'Booking created successfully! The photographer will contact you soon.');
+            // Redirect to a booking success page with booking details
+            return redirect()->route('bookings.success', $booking)
+                           ->with('success', 'Booking created successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Failed to create booking. Please try again.']);
         }
+    }
+
+    /**
+     * Show booking success page
+     */
+    public function success(Booking $booking)
+    {
+        // Ensure user can only see their own booking success
+        if ($booking->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $booking->load(['photographer', 'package', 'availabilities']);
+        return view('client.booking.success', compact('booking'));
     }
 
     /**

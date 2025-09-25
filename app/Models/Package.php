@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Package extends Model
 {
@@ -13,44 +15,52 @@ class Package extends Model
         'photographer_id',
         'name',
         'price',
-        'details'
+        'description',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
-     * Get the photographer that owns this package
+     * Get the photographer that owns the package.
      */
-    public function photographer()
+    public function photographer(): BelongsTo
     {
         return $this->belongsTo(Photographer::class);
     }
 
     /**
-     * Get all bookings that use this package
+     * Get the bookings for the package.
      */
-    public function bookings()
+    public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
     }
 
     /**
-     * Get formatted price display
+     * Get the formatted price attribute.
      */
-    public function getFormattedPriceAttribute()
+    public function getFormattedPriceAttribute(): string
     {
-        return 'LKR ' . number_format($this->price);
+        return '$' . number_format($this->price, 2);
     }
 
     /**
-     * Get short description 
+     * Scope a query to only include packages for a specific photographer.
      */
-    public function getShortDetailsAttribute()
+    public function scopeForPhotographer($query, $photographerId)
     {
-        return strlen($this->details) > 100 
-            ? substr($this->details, 0, 100) . '...' 
-            : $this->details;
+        return $query->where('photographer_id', $photographerId);
+    }
+
+    /**
+     * Scope a query to order packages by price.
+     */
+    public function scopeOrderByPrice($query, $direction = 'asc')
+    {
+        return $query->orderBy('price', $direction);
     }
 }

@@ -71,9 +71,6 @@
                     <!-- Dropdown menu -->
                     <div class="absolute right-0 top-full mt-2 w-45 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 z-50">
                         <div class="py-2 text-gray-800">
-                            <a href="#" class="block px-12 py-2 text-sm hover:bg-gray-100 transition-colors">Profile</a>
-                            <hr class="my-1">
-                            
                             <!-- Logout -->
                             <form method="POST" action="{{ route('client.logout') }}">
                                 @csrf

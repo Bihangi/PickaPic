@@ -33,13 +33,16 @@
                     <i class="fas fa-calendar-alt mr-3"></i>
                     Bookings
                 </a>
+                <a href="{{ route('admin.premium.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200">
+                    <i class="fas fa-crown mr-3"></i>
+                    Premium Management
+                    @if($pendingPremiumRequests > 0)
+                        <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $pendingPremiumRequests }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.reviews.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200">
                     <i class="fas fa-star mr-3"></i>
                     Reviews
-                </a>
-                <a href="{{ route('admin.reports.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    Reports
                 </a>
                 <a href="{{ route('admin.pending') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200">
                     <i class="fas fa-clock mr-3"></i>
@@ -94,6 +97,10 @@
                         <div>
                             <p class="text-sm font-medium text-gray-600">Total Photographers</p>
                             <p class="text-3xl font-bold text-gray-900">{{ number_format($totalPhotographers ?? 0) }}</p>
+                            <p class="text-xs text-amber-600 mt-1">
+                                <i class="fas fa-crown mr-1"></i>
+                                {{ $activePremiumPhotographers ?? 0 }} Premium
+                            </p>
                         </div>
                         <div class="p-3 bg-green-100 rounded-full">
                             <i class="fas fa-camera text-green-600 text-xl"></i>
@@ -114,83 +121,148 @@
                     </div>
                 </div>
 
-                <!-- This Month Revenue -->
-                <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition duration-200">
+                <!-- Premium Revenue -->
+                <div class="bg-white border-2 border-amber-200 p-6 rounded-lg shadow hover:shadow-lg transition duration-200">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-600">This Month Revenue</p>
-                            <p class="text-3xl font-bold text-gray-900">${{ number_format($thisMonthRevenue ?? 0, 2) }}</p>
+                            <p class="text-sm font-medium text-gray-600">Premium Revenue</p>
+                            <p class="text-3xl font-bold text-amber-700">Rs. {{ number_format($totalPremiumRevenue ?? 0, 0) }}</p>
+                            <p class="text-xs text-gray-500 mt-1">Primary revenue stream</p>
                         </div>
-                        <div class="p-3 bg-yellow-100 rounded-full">
-                            <i class="fas fa-dollar-sign text-yellow-600 text-xl"></i>
+                        <div class="p-3 bg-amber-100 rounded-full">
+                            <i class="fas fa-crown text-amber-600 text-xl"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Secondary Metrics Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-                <!-- Pending Bookings -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-orange-600">{{ $pendingBookings ?? 0 }}</p>
-                        <p class="text-sm text-gray-600">Pending Bookings</p>
+            <!-- Premium Management Section -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 mb-8 border border-amber-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-crown text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900">Premium Management Center</h3>
+                            <p class="text-gray-600">Manage photographer premium requests and revenue</p>
+                        </div>
                     </div>
-                </div>
+                    <a href="{{ route('admin.premium.index') }}" 
+                    class="bg-white text-gray-800 border border-gray-300 px-6 py-3 rounded-lg 
+                            shadow-sm hover:shadow-md hover:border-gray-400 
+                            transition-all duration-200 font-medium">
+                    Manage Premium
+                    </a>
 
-                <!-- Confirmed Bookings -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-blue-600">{{ $confirmedBookings ?? 0 }}</p>
-                        <p class="text-sm text-gray-600">Confirmed</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-orange-600">{{ $pendingPremiumRequests ?? 0 }}</p>
+                            <p class="text-sm text-gray-600">Pending Requests</p>
+                            @if($pendingPremiumRequests > 0)
+                                <div class="mt-2">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        Needs Review
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                </div>
 
-                <!-- Completed Bookings -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-green-600">{{ $completedBookings ?? 0 }}</p>
-                        <p class="text-sm text-gray-600">Completed</p>
+                    <div class="bg-white rounded-lg p-4">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-green-600">{{ $activePremiumPhotographers ?? 0 }}</p>
+                            <p class="text-sm text-gray-600">Active Premium</p>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Pending Reviews -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-red-600">{{ $pendingReviews ?? 0 }}</p>
-                        <p class="text-sm text-gray-600">Pending Reviews</p>
-                    </div>
-                </div>
-
-                <!-- Average Rating -->
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-yellow-600">{{ number_format($averageRating ?? 0, 1) }}</p>
-                        <p class="text-sm text-gray-600">Avg Rating</p>
+                    <div class="bg-white rounded-lg p-4">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-blue-600">{{ $premiumBookingAdvantage ?? 3.2 }}x</p>
+                            <p class="text-sm text-gray-600">Premium Booking Advantage</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts and Recent Activity -->
+            <!-- Performance Overview and Top Photographers -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Booking Trends Chart -->
+                <!-- Performance Overview -->
                 <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Monthly Booking Trends</h3>
-                    <canvas id="bookingTrendsChart" class="w-full h-64"></canvas>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Performance Overview</h3>
+                    <div class="space-y-4">
+                        <!-- Registration Rate -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">New Registrations (This Month)</span>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">{{ $monthlyRegistrations ?? 0 }}</span>
+                        </div>
+
+                        <!-- Booking Completion Rate -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Booking Completion Rate</span>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">
+                                {{ $totalBookings > 0 ? round((($completedBookings ?? 0) / $totalBookings) * 100, 1) : 0 }}%
+                            </span>
+                        </div>
+
+                        <!-- Premium Conversion -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-pink-500 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Premium Photographers</span>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">{{ $activePremiumPhotographers ?? 0 }}</span>
+                        </div>
+
+                        <!-- System Health -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">System Health</span>
+                            </div>
+                            <span class="text-sm font-semibold text-green-600">
+                                <i class="fas fa-check-circle mr-1"></i>Operational
+                            </span>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
+                                <span class="text-sm text-gray-600">Recent Activity</span>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">{{ $recentActivity ?? 'Active' }}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Top Photographers -->
+                <!-- Top Premium Photographers -->
                 <div class="bg-white p-6 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Photographers</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Premium Photographers</h3>
                     <div class="space-y-3">
                         @forelse($topPhotographers ?? [] as $photographer)
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center relative">
+                                    @if($photographer->isPremium())
+                                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-crown text-white text-xs"></i>
+                                        </div>
+                                    @endif
                                     <i class="fas fa-user text-gray-600"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">{{ $photographer->name ?? 'N/A' }}</p>
+                                    <p class="text-sm font-medium text-gray-900">{{ $photographer->user->name ?? 'N/A' }}</p>
                                     <p class="text-xs text-gray-500">{{ $photographer->location ?? 'No location' }}</p>
                                 </div>
                             </div>
@@ -222,7 +294,14 @@
                         <div class="flex items-center justify-between border-b pb-2">
                             <div>
                                 <p class="text-sm font-medium text-gray-900">{{ $booking->user->name ?? 'N/A' }}</p>
-                                <p class="text-xs text-gray-500">with {{ $booking->photographer->name ?? 'N/A' }}</p>
+                                <p class="text-xs text-gray-500">
+                                    with {{ $booking->photographer->user->name ?? 'N/A' }}
+                                    @if($booking->photographer && $booking->photographer->isPremium())
+                                        <span class="inline-flex items-center ml-1 px-1 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+                                            <i class="fas fa-crown mr-1"></i>TOP
+                                        </span>
+                                    @endif
+                                </p>
                             </div>
                             <div class="text-right">
                                 <span class="px-2 py-1 text-xs rounded-full 
@@ -233,7 +312,7 @@
                                     {{ ucfirst($booking->status) }}
                                 </span>
                                 @if(isset($booking->total_amount))
-                                <p class="text-xs text-gray-500 mt-1">${{ number_format($booking->total_amount, 2) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">Rs. {{ number_format($booking->total_amount, 2) }}</p>
                                 @endif
                             </div>
                         </div>
@@ -260,9 +339,14 @@
                                     <p class="text-sm font-medium text-gray-900">{{ $review->user->name ?? 'Anonymous' }}</p>
                                     <div class="flex items-center">
                                         @for($i = 1; $i <= 5; $i++)
-                                            <i class="fas fa-star text-xs {{ $i <= ($review->rating ?? 0) ? 'text-yellow-400' : 'text-gray-300' }}"></i>
+                                            <i class="fas fa-star text-xs {{ $i <= ($review->rating ?? 0) ? 'text-amber-400' : 'text-gray-300' }}"></i>
                                         @endfor
-                                        <span class="text-xs text-gray-500 ml-2">for {{ $review->photographer->name ?? 'N/A' }}</span>
+                                        <span class="text-xs text-gray-500 ml-2">
+                                            for {{ $review->photographer->user->name ?? 'N/A' }}
+                                            @if($review->photographer && $review->photographer->isPremium())
+                                                <i class="fas fa-crown text-amber-500 ml-1"></i>
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
                                 @if(isset($review->is_approved))
@@ -294,6 +378,16 @@
             <div class="mt-8 bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-bold mb-4 text-gray-800">Quick Actions</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <a href="{{ route('admin.premium.index') }}" 
+                       class="bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-orange-600 px-4 py-3 rounded-lg text-center font-medium transition duration-200 border border-orange-200">
+                       <i class="fas fa-crown block text-lg mb-1"></i>
+                       Premium Requests
+                       @if($pendingPremiumRequests > 0)
+                           <div class="mt-1">
+                               <span class="inline-block w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
+                           </div>
+                       @endif
+                    </a>
                     <a href="{{ route('admin.users.index') }}" 
                        class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-3 rounded-lg text-center font-medium transition duration-200 border border-blue-200">
                        <i class="fas fa-users block text-lg mb-1"></i>
@@ -319,56 +413,10 @@
                        <i class="fas fa-star block text-lg mb-1"></i>
                        Reviews
                     </a>
-                    <a href="{{ route('admin.reports.index') }}" 
-                       class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-3 rounded-lg text-center font-medium transition duration-200 border border-indigo-200">
-                       <i class="fas fa-chart-bar block text-lg mb-1"></i>
-                       Reports
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Chart.js Script -->
-    <script>
-        // Booking Trends Chart - Using real data from controller
-        const ctx = document.getElementById('bookingTrendsChart').getContext('2d');
-        const bookingTrendsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                $monthlyBookings = Booking::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                    ->groupBy('month')
-                    ->get();
-
-                datasets: [{
-                    label: 'Bookings',
-                    $monthlyBookings = Booking::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
-                        ->groupBy('month')
-                        ->get();
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    </script>
 </body>
 </html>

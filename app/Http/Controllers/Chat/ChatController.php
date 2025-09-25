@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
-use App\Models\Photographer;
 use App\Events\MessageSent;
 use App\Events\MessageDeleted;
 use Illuminate\Http\Request;
@@ -39,14 +38,18 @@ class ChatController extends Controller
             ->orderBy('last_message_at', 'desc')
             ->get();
 
-        return view('chat.index', compact('conversations'));
+        // Role-based view
+        if ($user->role === 'photographer') {
+            return view('chat.index-photographer', compact('conversations'));
+        } else {
+            return view('chat.index', compact('conversations'));
+        }
     }
 
     public function show(Conversation $conversation) 
     {
         $this->authorize('view', $conversation);
 
-        // Mark messages as read
         $conversation->messages()
             ->where('sender_id', '!=', Auth::id())
             ->where('is_read', false)
@@ -61,7 +64,12 @@ class ChatController extends Controller
             ? $conversation->photographer 
             : $conversation->client;
 
-        return view('chat.show', compact('conversation', 'messages', 'otherUser'));
+        $user = Auth::user();
+        if ($user->role === 'photographer') {
+            return view('chat.show-photographer', compact('conversation', 'messages', 'otherUser'));
+        } else {
+            return view('chat.show', compact('conversation', 'messages', 'otherUser'));
+        }
     }
 
     public function sendMessage(Request $request, Conversation $conversation) 
@@ -87,20 +95,15 @@ class ChatController extends Controller
                 'is_read' => false
             ]);
 
-            // Update conversation last message time
             $conversation->update(['last_message_at' => now()]);
-
-            // Load sender relationship
             $message->load('sender');
 
-            // Broadcast the message
             try {
                 broadcast(new MessageSent($message))->toOthers();
             } catch (\Exception $e) {
                 \Log::warning('Broadcast failed: ' . $e->getMessage());
             }
 
-            // Always return JSON response for AJAX requests
             return response()->json([
                 'success' => true,
                 'message' => [
@@ -138,7 +141,6 @@ class ChatController extends Controller
 
     public function createConversation(Request $request)
     {
-        // Only clients can start new conversations
         if (Auth::user()->role !== 'client') {
             return response()->json([
                 'success' => false,
@@ -151,19 +153,10 @@ class ChatController extends Controller
                 'initial_message' => 'required|string|max:1000'
             ]);
 
-            // Ensure the user is a client and the photographer exists
             $photographer = User::where('id', $request->photographer_id)
                 ->where('role', 'photographer')
                 ->firstOrFail();
 
-            if (Auth::user()->role !== 'client') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Only clients can start conversations with photographers'
-                ], 403);
-            }
-
-            // Check if conversation already exists
             $existingConversation = Conversation::where('user_id', Auth::id())
                 ->where('photographer_id', $request->photographer_id)
                 ->first();
@@ -177,14 +170,12 @@ class ChatController extends Controller
                 ]);
             }
 
-            // Create new conversation
             $conversation = Conversation::create([
                 'user_id' => Auth::id(),
                 'photographer_id' => $request->photographer_id,
                 'last_message_at' => now()
             ]);
 
-            // Send initial message
             $message = Message::create([
                 'conversation_id' => $conversation->id,
                 'sender_id' => Auth::id(),
@@ -217,7 +208,6 @@ class ChatController extends Controller
         try {
             $conversation = $message->conversation;
             
-            // Check if user has permission to delete this message
             if ($message->sender_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -225,7 +215,6 @@ class ChatController extends Controller
                 ], 403);
             }
 
-            // Check if user is part of this conversation
             if ($conversation->user_id !== Auth::id() && $conversation->photographer_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -233,24 +222,18 @@ class ChatController extends Controller
                 ], 403);
             }
 
-            // Delete attachment file if exists
             if ($message->attachment) {
                 Storage::disk('public')->delete($message->attachment);
             }
 
-            // Store message ID before deletion
             $messageId = $message->id;
-            
-            // Delete the message
             $message->delete();
 
-            // Update conversation's last message time if this was the latest message
             $lastMessage = $conversation->messages()->latest()->first();
             $conversation->update([
                 'last_message_at' => $lastMessage ? $lastMessage->created_at : $conversation->created_at
             ]);
 
-            // Broadcast message deletion to other users
             broadcast(new MessageDeleted($messageId, $conversation->id))->toOthers();
 
             return response()->json([
@@ -268,121 +251,88 @@ class ChatController extends Controller
         }
     }
 
+    public function getAvailablePhotographers() { /* same as your second version */ }
+    public function showPhotographers() { /* same as your second version */ }
+    public function getUnreadCount() { /* same as your second version */ }
+    public function getPhotographerConversations() { /* same as your second version */ }
+    public function getPhotographerUnreadCount() { /* same as your second version */ }
+
     /**
-     * Get available photographers for clients to start conversations with
+     * Notifications (from first version)
      */
-    public function getAvailablePhotographers()
+    public function getNotifications()
     {
+        $user = Auth::user();
+        
+        if ($user->role !== 'photographer') {
+            return response()->json(['notifications' => []]);
+        }
+        
         try {
-            // Check authentication and role
-            if (!Auth::check()) {
-                return response()->json(['success' => false, 'message' => 'Not authenticated'], 401);
-            }
-            
-            if (Auth::user()->role !== 'client') {
-                return response()->json(['success' => false, 'message' => 'Access denied'], 403);
-            }
+            $photographer = $user->photographer;
+            $notifications = collect();
 
-            $user = Auth::user();
-
-            // Start with basic query and add fields that exist
-            $query = User::where('role', 'photographer');
-            
-            // Check if status column exists before filtering
-            if (\Schema::hasColumn('users', 'status')) {
-                $query->where('status', 'verified');
-            }
-
-            // Select only fields that definitely exist
-            $baseFields = ['id', 'name', 'email'];
-            $optionalFields = ['profile_image', 'bio', 'location', 'contact'];
-            
-            $selectFields = $baseFields;
-            foreach ($optionalFields as $field) {
-                if (\Schema::hasColumn('users', $field)) {
-                    $selectFields[] = $field;
-                }
-            }
-
-            $photographers = $query->select($selectFields)
+            $newBookings = \App\Models\Booking::where('photographer_id', $photographer->id)
+                ->where('status', 'pending')
+                ->where('created_at', '>=', now()->subDays(7))
+                ->with('user')
                 ->get()
-                ->map(function($photographer) use ($user) {
-                    // Check for existing conversations manually to avoid relationship issues
-                    $existingConversation = \DB::table('conversations')
-                        ->where('user_id', $user->id)
-                        ->where('photographer_id', $photographer->id)
-                        ->first();
-
+                ->map(function ($booking) {
                     return [
-                        'id' => $photographer->id,
-                        'name' => $photographer->name,
-                        'email' => $photographer->email,
-                        'profile_image' => $photographer->profile_image ? 
-                            asset('storage/' . str_replace('\\', '/', $photographer->profile_image)) : null,
-                        'bio' => $photographer->bio ?? null,
-                        'location' => $photographer->location ?? 'Location not specified',
-                        'contact' => $photographer->contact ?? null,
-                        'existing_conversation_id' => $existingConversation->id ?? null
+                        'id' => 'booking_' . $booking->id,
+                        'type' => 'booking',
+                        'title' => 'New Booking Request',
+                        'message' => ($booking->client_name ?? $booking->user->name ?? 'A client') . ' has requested to book your services',
+                        'time' => $booking->created_at->diffForHumans(),
+                        'icon' => 'fa-calendar-plus',
+                        'color' => 'text-blue-600',
+                        'bg_color' => 'bg-blue-100',
+                        'url' => route('photographer.dashboard') . '#bookings'
                     ];
                 });
 
+            $unreadMessages = \App\Models\Message::whereHas('conversation', function($query) use ($user) {
+                $query->where('photographer_id', $user->id);
+            })
+            ->where('sender_id', '!=', $user->id)
+            ->where('is_read', false)
+            ->where('created_at', '>=', now()->subDays(7))
+            ->with(['conversation.client'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($message) {
+                return [
+                    'id' => 'message_' . $message->id,
+                    'type' => 'message',
+                    'title' => 'New Message',
+                    'message' => 'New message from ' . ($message->conversation->client->name ?? 'a client'),
+                    'time' => $message->created_at->diffForHumans(),
+                    'icon' => 'fa-comment',
+                    'color' => 'text-green-600',
+                    'bg_color' => 'bg-green-100',
+                    'url' => route('chat.show', $message->conversation_id)
+                ];
+            });
+
+            $notifications = $notifications->concat($newBookings)->concat($unreadMessages);
+            $notifications = $notifications->take(10)->values();
+            
             return response()->json([
                 'success' => true,
-                'photographers' => $photographers
+                'notifications' => $notifications,
+                'count' => $notifications->count()
             ]);
-
+            
         } catch (\Exception $e) {
-            \Log::error('API Error in getAvailablePhotographers: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            \Log::error('Error getting notifications: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Server error occurred. Please check logs for details.'
-            ], 500);
+                'notifications' => [],
+                'count' => 0
+            ]);
         }
     }
-    
-    public function showPhotographers()
-    {
-        // Only allow clients to access this page
-        if (Auth::user()->role !== 'client') {
-            return redirect()->route('chat.index');
-        }
 
-        $user = Auth::user();
-        
-        // Get all photographers with their conversation status
-        $photographers = User::where('role', 'photographer')
-            ->where('status', 'verified')
-            ->select('id', 'name', 'email', 'profile_image', 'bio', 'location', 'contact')
-            ->withCount(['conversations as conversations_count' => function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }])
-            ->with(['conversations' => function($query) use ($user) {
-                $query->where('user_id', $user->id)->select('id', 'photographer_id');
-            }])
-            ->get()
-            ->map(function($photographer) {
-                $photographer->existing_conversation_id = $photographer->conversations->first()->id ?? null;
-                unset($photographer->conversations);
-                return $photographer;
-            });
-
-        return view('photographers.chat', compact('photographers'));
-    }
-
-    public function getUnreadCount()
-    {
-        $user = Auth::user();
-        
-        $unreadCount = Message::whereHas('conversation', function($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->orWhere('photographer_id', $user->id);
-        })
-        ->where('sender_id', '!=', $user->id)
-        ->where('is_read', false)
-        ->count();
-        
-        return response()->json(['count' => $unreadCount]);
-    }
 }

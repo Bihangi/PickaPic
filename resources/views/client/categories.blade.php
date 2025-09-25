@@ -10,7 +10,7 @@
     </h1>
     <p class="text-[#444] text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed">
       From intimate moments to grand celebrations —<br class="hidden sm:block">
-      discover professional photographers who bring your vision to life.
+      discover professional photographers across Sri Lanka who bring your vision to life.
     </p>
   </div>
 </section>
@@ -34,7 +34,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
           <div class="absolute bottom-4 left-4 right-4 z-10">
             <div class="transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <p class="text-white font-bold text-sm mb-1">Starting from $2,500</p>
+              <p class="text-white font-bold text-sm mb-1">Starting from Rs. 70,000</p>
               <p class="text-white/90 text-xs">Full day coverage • 500+ edited photos</p>
             </div>
           </div>
@@ -92,7 +92,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
           <div class="absolute bottom-4 left-4 right-4 z-10">
             <div class="transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <p class="text-white font-bold text-sm mb-1">Starting from $800</p>
+              <p class="text-white font-bold text-sm mb-1">Starting from Rs. 40,000</p>
               <p class="text-white/90 text-xs">4-hour coverage • 200+ edited photos</p>
             </div>
           </div>
@@ -149,7 +149,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
           <div class="absolute bottom-4 left-4 right-4 z-10">
             <div class="transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <p class="text-white font-bold text-sm mb-1">Starting from $1,200</p>
+              <p class="text-white font-bold text-sm mb-1">Starting from Rs. 60,000</p>
               <p class="text-white/90 text-xs">Golden hour sessions • Location scouting</p>
             </div>
           </div>
@@ -166,14 +166,14 @@
             </div>
           </div>
           <p class="text-[#444] text-base leading-relaxed flex-1 mb-6">
-            Where natural beauty meets celebration. Stunning outdoor photography that harnesses golden hour magic and creates breathtaking memories.
+            Where natural beauty meets celebration. Stunning outdoor photography that harnesses Sri Lanka's golden hour magic and creates breathtaking memories.
           </p>
           <div class="space-y-3 mb-6">
             <div class="flex items-center text-sm text-gray-500">
               <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
-              Weather backup plans
+              Monsoon backup plans
             </div>
             <div class="flex items-center text-sm text-gray-500">
               <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
           <div class="absolute bottom-4 left-4 right-4 z-10">
             <div class="transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <p class="text-white font-bold text-sm mb-1">Starting from $600</p>
+              <p class="text-white font-bold text-sm mb-1">Starting from Rs. 50,000</p>
               <p class="text-white/90 text-xs">Studio & location • Professional styling</p>
             </div>
           </div>
@@ -260,7 +260,7 @@
       Ready to Create Something Extraordinary?
     </h2>
     <p class="text-[#444] text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10">
-      Connect with professional photographers who understand your vision and bring your most important moments to life.
+      Connect with professional photographers across Sri Lanka who understand your vision and bring your most important moments to life.
     </p>
     <div class="flex justify-center">
       <a href="{{ route('photographers.index') }}" 

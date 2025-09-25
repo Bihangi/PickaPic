@@ -9,6 +9,7 @@ use App\Models\Photographer;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Package;
+use App\Models\PremiumRequest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
@@ -35,16 +36,13 @@ class DashboardController extends Controller
         $averageRating = 0;
         
         try {
-            // Check if is_approved column exists
             if (Schema::hasColumn('reviews', 'is_approved')) {
                 $pendingReviews = Review::where('is_approved', false)->count();
                 $averageRating = Review::where('is_approved', true)->avg('rating') ?? 0;
             } else {
-                // If column doesn't exist, assume all reviews are approved
                 $averageRating = Review::avg('rating') ?? 0;
             }
         } catch (\Exception $e) {
-            // Fallback if there's any database error
             $pendingReviews = 0;
             $averageRating = Review::avg('rating') ?? 0;
         }
@@ -61,14 +59,31 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             $thisMonthRevenue = 0;
         }
+        
+        // Premium stats
+        $pendingPremiumRequests = 0;
+        $activePremiumPhotographers = 0;
+        $totalPremiumRevenue = 0;
+
+        try {
+            if (Schema::hasTable('premium_requests')) {
+                $pendingPremiumRequests = PremiumRequest::pending()->count();
+                $activePremiumPhotographers = PremiumRequest::active()->distinct('photographer_id')->count();
+                $totalPremiumRevenue = PremiumRequest::approved()->sum('amount_paid');
+            }
+        } catch (\Exception $e) {
+            $pendingPremiumRequests = 0;
+            $activePremiumPhotographers = 0;
+            $totalPremiumRevenue = 0;
+        }
             
         // Recent activities
-        $recentBookings = Booking::with(['user', 'photographer'])
+        $recentBookings = Booking::with(['user', 'photographer.user'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
             
-        $recentReviews = Review::with(['user', 'photographer'])
+        $recentReviews = Review::with(['user', 'photographer.user'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
@@ -90,13 +105,12 @@ class DashboardController extends Controller
         $topPhotographers = [];
         try {
             $topPhotographers = Photographer::withCount('bookings')
+                ->with(['user', 'activePremiumRequest'])
                 ->orderBy('bookings_count', 'desc')
                 ->take(5)
                 ->get();
         } catch (\Exception $e) {
-            // If bookings relationship doesn't exist, get photographers without count
             $topPhotographers = Photographer::take(5)->get();
-            // Add a bookings_count property manually
             foreach ($topPhotographers as $photographer) {
                 $photographer->bookings_count = 0;
             }
@@ -115,6 +129,9 @@ class DashboardController extends Controller
             'pendingReviews',
             'averageRating',
             'thisMonthRevenue',
+            'pendingPremiumRequests',
+            'activePremiumPhotographers',
+            'totalPremiumRevenue',
             'recentBookings',
             'recentReviews',
             'monthlyBookings',

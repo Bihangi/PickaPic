@@ -130,9 +130,7 @@
                                 <select name="status" onchange="this.form.submit()" 
                                         class="text-sm border rounded px-2 py-1">
                                     <option value="pending" {{ $booking->status=='pending'?'selected':'' }}>pending</option>
-                                    <option value="confirmed" {{ $booking->status=='confirmed'?'selected':'' }}>confirmed</option>
                                     <option value="completed" {{ $booking->status=='completed'?'selected':'' }}>completed</option>
-                                    <option value="cancelled" {{ $booking->status=='cancelled'?'selected':'' }}>cancelled</option>
                                 </select>
                             </form>
                         </td>

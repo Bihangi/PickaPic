@@ -154,18 +154,32 @@
             
             <div id="availability-calendar" class="space-y-4">
               @if($photographerModel->availabilities->where('status', 'available')->count() > 0)
-                <div class="space-y-3">
+                <div class="space-y-4">
                   @foreach($photographerModel->availabilities->where('status', 'available')->groupBy(function($item) { return $item->date->format('Y-m-d'); }) as $date => $slots)
                     <div class="border border-gray-200 rounded-xl p-4">
-                      <h4 class="font-semibold text-gray-800 mb-3">
-                        {{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
+                      <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-calendar-day text-blue-600 mr-2"></i>
+                        {{ \Carbon\Carbon::parse($date)->format('l, F j, Y') }}
                       </h4>
-                      <div class="grid grid-cols-2 gap-2">
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @foreach($slots as $slot)
-                          <label class="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 cursor-pointer hover:bg-gray-100 transition-all duration-200">
-                            <input type="checkbox" name="selected_slots[]" value="{{ $slot->id }}" 
-                                   class="mr-2 rounded">
-                            <span class="text-sm font-medium">{{ $slot->formatted_time }}</span>
+                          <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200">
+                            <div class="flex items-center">
+                              <input type="checkbox" name="selected_slots[]" value="{{ $slot->id }}" 
+                                     class="mr-3 rounded">
+                              <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-900">
+                                  {{ \Carbon\Carbon::parse($slot->start_time)->format('g:i A') }} - 
+                                  {{ \Carbon\Carbon::parse($slot->end_time)->format('g:i A') }}
+                                </span>
+                                <span class="text-xs text-gray-500">
+                                  {{ \Carbon\Carbon::parse($slot->start_time)->diffInHours(\Carbon\Carbon::parse($slot->end_time)) }} hour(s)
+                                </span>
+                              </div>
+                            </div>
+                            <div class="ml-2">
+                              <i class="fas fa-clock text-gray-400 text-sm"></i>
+                            </div>
                           </label>
                         @endforeach
                       </div>
@@ -173,11 +187,17 @@
                   @endforeach
                 </div>
                 
-                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-                  <p class="text-blue-800 text-sm">
-                    <strong>Note:</strong> Select multiple time slots if needed for your event. 
-                    You can choose consecutive slots for longer sessions.
-                  </p>
+                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                    <div>
+                      <p class="text-blue-800 text-sm font-medium mb-1">Time Slot Selection:</p>
+                      <p class="text-blue-700 text-sm">
+                        Select multiple consecutive time slots if you need a longer session. 
+                        Each slot shows the specific time range available for booking.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               @else
                 <div class="text-center py-8">
@@ -186,10 +206,18 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                   </div>
-                  <p class="text-gray-500">No available time slots at the moment.</p>
+                  <p class="text-gray-500 font-medium">No available time slots at the moment.</p>
                   <p class="text-gray-400 text-sm mt-2">Please contact the photographer directly or check back later.</p>
                 </div>
               @endif
+            </div>
+          </div>
+
+          <!-- Selected Slots Summary -->
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6" id="selected-slots-summary" style="display: none;">
+            <h3 class="text-xl font-bold text-black mb-4">Selected Time Slots</h3>
+            <div id="selected-slots-list" class="space-y-2">
+              <!-- Dynamic content will be inserted here -->
             </div>
           </div>
 
@@ -238,6 +266,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const additionalCostEl = document.getElementById('additional-cost');
     const totalPriceEl = document.getElementById('total-price');
     const additionalHoursRow = document.getElementById('additional-hours-row');
+    const selectedSlotsCheckboxes = document.querySelectorAll('input[name="selected_slots[]"]');
+    const selectedSlotsSummary = document.getElementById('selected-slots-summary');
+    const selectedSlotsList = document.getElementById('selected-slots-list');
 
     function updatePrice() {
         const selectedPackage = document.querySelector('input[name="package_id"]:checked');
@@ -282,6 +313,34 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error calculating price:', error));
     }
 
+    function updateSelectedSlots() {
+        const selectedSlots = document.querySelectorAll('input[name="selected_slots[]"]:checked');
+        
+        if (selectedSlots.length > 0) {
+            selectedSlotsSummary.style.display = 'block';
+            selectedSlotsList.innerHTML = '';
+            
+            selectedSlots.forEach(slot => {
+                const label = slot.closest('label');
+                const timeText = label.querySelector('.text-sm.font-semibold').textContent;
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-lg';
+                slotDiv.innerHTML = `
+                    <span class="text-green-800 text-sm font-medium">
+                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                        ${timeText}
+                    </span>
+                    <button type="button" onclick="this.closest('div').previousElementSibling?.click()" class="text-green-600 hover:text-green-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                selectedSlotsList.appendChild(slotDiv);
+            });
+        } else {
+            selectedSlotsSummary.style.display = 'none';
+        }
+    }
+
     // Event listeners
     if (customHoursInput) {
         customHoursInput.addEventListener('input', updatePrice);
@@ -291,8 +350,13 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', updatePrice);
     });
 
-    // Initialize price calculation
+    selectedSlotsCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedSlots);
+    });
+
+    // Initialize price calculation and selected slots
     updatePrice();
+    updateSelectedSlots();
 
     // Form validation
     document.querySelector('form').addEventListener('submit', function(e) {
@@ -338,6 +402,16 @@ label:hover {
 .calculating {
     opacity: 0.6;
     pointer-events: none;
+}
+
+/* Enhanced slot selection styling */
+input[name="selected_slots[]"]:checked + div {
+    color: #059669;
+    font-weight: 600;
+}
+
+input[name="selected_slots[]"]:checked ~ .fa-clock {
+    color: #059669;
 }
 </style>
 @endsection

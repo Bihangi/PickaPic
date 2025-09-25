@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\PremiumRequest;
 
 class Photographer extends Authenticatable
 {
@@ -84,15 +85,32 @@ class Photographer extends Authenticatable
     }
 
     /**
+     * Premium Requests Relationships
+     */
+    public function premiumRequests()
+    {
+        return $this->hasMany(PremiumRequest::class);
+    }
+
+    public function latestPremiumRequest()
+    {
+        return $this->hasOne(PremiumRequest::class)->latest();
+    }
+
+    public function activePremiumRequest()
+    {
+        // Prefer the scope `active()` if defined in PremiumRequest model
+        return $this->hasOne(PremiumRequest::class)->active();
+    }
+
+    /**
      * Accessors / Mutators
      */
-    // Get categories as array
     public function getCategoriesAttribute($value)
     {
         return $value ? explode(',', $value) : [];
     }
 
-    // Save categories as comma-separated string
     public function setCategoriesAttribute($value)
     {
         $this->attributes['categories'] = is_array($value) ? implode(',', $value) : $value;
@@ -143,5 +161,69 @@ class Photographer extends Authenticatable
     public function sentMessages()
     {
         return $this->hasMany(\App\Models\Message::class, 'sender_id', 'id');
+    }
+
+    /**
+     * Premium Helpers
+     */
+    public function isPremium()
+    {
+        return $this->activePremiumRequest()->exists();
+    }
+
+    public function hasPendingPremiumRequest()
+    {
+        return $this->premiumRequests()->pending()->exists();
+    }
+
+    public function getPremiumExpiryDate()
+    {
+        $activePremium = $this->activePremiumRequest()->first();
+        return $activePremium ? $activePremium->expires_at : null;
+    }
+
+    public function premiumExpiresSoon()
+    {
+        $activePremium = $this->activePremiumRequest()->first();
+        return $activePremium ? $activePremium->expiresSoon() : false;
+    }
+
+    public function getPremiumDaysRemaining()
+    {
+        $activePremium = $this->activePremiumRequest()->first();
+        return $activePremium ? $activePremium->getDaysRemaining() : null;
+    }
+
+    public function getPremiumBadge()
+    {
+        if ($this->isPremium()) {
+            return [
+                'show' => true,
+                'class' => 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white',
+                'icon' => 'fas fa-crown',
+                'text' => 'TOP'
+            ];
+        }
+        return ['show' => false];
+    }
+
+    /**
+     * Query Scopes
+     */
+    public function scopePremium($query)
+    {
+        return $query->whereHas('activePremiumRequest');
+    }
+
+    public function scopeOrderByPremium($query)
+    {
+        return $query->leftJoin('premium_requests', function($join) {
+            $join->on('photographers.id', '=', 'premium_requests.photographer_id')
+                ->where('premium_requests.status', '=', 'approved')
+                ->where('premium_requests.expires_at', '>', now());
+        })
+        ->orderByRaw('CASE WHEN premium_requests.id IS NOT NULL THEN 0 ELSE 1 END')
+        ->orderBy('photographers.created_at', 'desc')
+        ->select('photographers.*');
     }
 }
