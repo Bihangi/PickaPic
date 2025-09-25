@@ -107,21 +107,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     })->name('logout');
 });
 
-// Photographer Authentication Routes (NO PREFIX CONFLICTS)
+// Photographer Authentication Routes 
 Route::get('/photographer/login', [PhotographerLoginController::class, 'showLoginForm'])->name('photographer.login');
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration Routes (SEPARATED - NO CONFLICTS)
-Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register.form');
+// Photographer Registration Routes =
+Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.registers.form');
 Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
 
-// Alternative photographer registration form - COMPLETELY SEPARATE
+// Alternative photographer registration form 
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.alternative');
+})->name('photographer.registers.alternative');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
