@@ -115,16 +115,18 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration - Combined and cleaned up
-Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.register');
-Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
+// Photographer Registration - FIXED: Combined routes with single group
+Route::prefix('photographer')->name('photographer.')->group(function () {
+    Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [PhotographerRegisterController::class, 'register'])->name('register.submit');
+});
 
-// Alternative photographer registration form route (for verified users)
+// Alternative photographer registration form route (for verified users) - FIXED: Different name
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.form');
+})->name('photographer.register.alt');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -166,7 +168,7 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.register.store');
+})->name('photographer.register.alt.store');
 
 // Verification Pending Views
 Route::view('/verification-pending', 'auth.verification_pending')->name('auth.verification_pending');
