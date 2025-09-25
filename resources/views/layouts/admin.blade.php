@@ -44,10 +44,6 @@
                     <i class="fas fa-star mr-3"></i>
                     Reviews
                 </a>
-                <a href="{{ route('admin.reports.index') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200 {{ request()->routeIs('admin.reports.*') ? 'bg-gray-100 border-r-4 border-blue-500 text-gray-700' : '' }}">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    Reports
-                </a>
                 <a href="{{ route('admin.pending') }}" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-700 transition duration-200 {{ request()->routeIs('admin.pending') ? 'bg-gray-100 border-r-4 border-blue-500 text-gray-700' : '' }}">
                     <i class="fas fa-clock mr-3"></i>
                     Pending

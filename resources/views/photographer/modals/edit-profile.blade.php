@@ -450,7 +450,7 @@ function submitProfileForm() {
     saveBtnText.textContent = 'Saving...';
     saveBtnLoading.classList.remove('hidden');
     
-    fetch('{{ route("photographer.profile.update") }}', {
+    fetch('{{ route("photographer.dashboard.profile.update") }}', {
         method: 'POST',
         body: formData,
         headers: {

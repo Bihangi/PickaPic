@@ -78,7 +78,7 @@ document.getElementById('availability-form')?.addEventListener('submit', functio
         jsonData[key] = value;
     }
     
-    fetch('{{ route("photographer.availabilities.store") }}', {
+    fetch('{{ route("photographer.dashboard.availabilities.store") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

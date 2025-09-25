@@ -210,7 +210,7 @@
                             <i class="fas fa-upload mr-2"></i>
                             Upload Photos
                         </button>
-                        <a href="{{ route('photographer.calendar') }}" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                        <a href="{{ route('photographer.dashboard.calendar') }}" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
                             <i class="fas fa-calendar mr-2"></i>
                             View Calendar
                         </a>

@@ -65,7 +65,7 @@
 
         <div class="text-center text-sm mt-5">
             Don’t have an account?
-            <a href="{{ route('register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
+            <a href="{{ route('auth.register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
         </div>
     </div>
 

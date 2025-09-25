@@ -211,7 +211,7 @@ document.getElementById('portfolio-form')?.addEventListener('submit', function(e
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
     submitBtn.disabled = true;
     
-    fetch('{{ route("photographer.portfolio.upload") }}', {
+    fetch('{{ route("photographer.dashboard.portfolio.upload") }}', {
         method: 'POST',
         body: validFormData,
         headers: {
