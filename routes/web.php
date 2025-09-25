@@ -44,7 +44,10 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 // Home Page
 Route::get('/', fn () => view('welcome'))->name('home');
 
-// Admin Login
+// Choose Role
+Route::view('/choose-role', 'auth.choose-role')->name('choose.role');
+
+// Admin Login Routes
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
 
@@ -112,19 +115,12 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration Routes (FIXED - UNIQUE NAMES)
-Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])
-    ->name('photographer.register.form');
-
-Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])
-    ->name('photographer.register.submit');
-
-// Alternative photographer registration form (FIXED - UNIQUE NAMES)
+// Photographer Registration Routes (consolidated)
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.alternative');
+})->name('photographer.registration.form');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -166,12 +162,12 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.register.alternative.store');
+})->name('photographer.register.store');
 
 // Verification Pending
 Route::get('/verification/pending', fn() => view('auth.verification_pending'))->name('verification.pending');
 
-// Photographer Dashboard and Protected Routes (SINGLE GROUP WITH UNIQUE PREFIX)
+// Photographer Dashboard and Protected Routes
 Route::middleware(['auth'])->prefix('photographer')->name('photographer.dashboard.')->group(function () {
     Route::get('/dashboard', [PhotographerDashboardController::class, 'index'])->name('index');
     Route::get('/calendar', [PhotographerDashboardController::class, 'calendar'])->name('calendar');
@@ -213,42 +209,40 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.dashboar
     Route::post('/notifications/mark-read', [PhotographerDashboardController::class, 'markNotificationsAsRead'])->name('notifications.mark-read');
 });
 
-// Google OAuth
+// Google OAuth Routes
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('auth.google.callback');
 
-// Profile
+// Profile Routes (authenticated users)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Choose Role
-Route::view('/choose-role', 'auth.choose-role')->name('choose.role');
-
-// Client Routes (FIXED - EXPLICIT NAMES)
+// Client Authentication and Routes
 Route::prefix('client')->name('client.')->group(function () {
+    // Authentication Routes
     Route::get('register', [ClientRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('register', [ClientRegisterController::class, 'register'])->name('register.submit');
     Route::get('login', [ClientLoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [ClientLoginController::class, 'login'])->name('login.submit');
     Route::post('logout', [ClientLoginController::class, 'logout'])->name('logout');
 
-    Route::post('/profile/update', [App\Http\Controllers\Client\DashboardController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/bookings', [App\Http\Controllers\Client\DashboardController::class, 'getBookings'])->name('bookings');
-    Route::get('/booking/{booking}', [App\Http\Controllers\Client\DashboardController::class, 'getBookingDetails'])->name('booking.details');
+    // Client Dashboard and Protected Routes
+    Route::middleware('auth')->group(function () {
+        Route::get('/client-dashboard', fn () => view('client.client-dashboard'))->name('dashboard');
+        Route::post('/profile/update', [App\Http\Controllers\Client\DashboardController::class, 'updateProfile'])->name('profile.update');
+        Route::get('/bookings', [App\Http\Controllers\Client\DashboardController::class, 'getBookings'])->name('bookings');
+        Route::get('/booking/{booking}', [App\Http\Controllers\Client\DashboardController::class, 'getBookingDetails'])->name('booking.details');
+    });
 });
-
-// Client Dashboard
-Route::get('/client/client-dashboard', fn () => view('client.client-dashboard'))
-    ->middleware('auth')->name('client.dashboard');
 
 // Public Pages
 Route::view('/about', 'client.about')->name('about');
 Route::get('/categories', fn () => view('client.categories'))->name('categories');
 
-// Photographer Listings
+// Photographer Listings (Public)
 Route::prefix('photographers')->group(function () {
     Route::get('/', [ClientPhotographerController::class, 'index'])->name('photographers.index');
     Route::get('/{id}', [ClientPhotographerController::class, 'show'])->name('photographers.show');
@@ -256,7 +250,7 @@ Route::prefix('photographers')->group(function () {
         ->middleware('auth')->name('reviews.store');
 });
 
-// Booking (auth required)
+// Booking Routes (auth required)
 Route::middleware(['auth'])->group(function () {
     Route::get('/book/{photographer}/package/{package?}', [BookingController::class, 'create'])->name('book.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
@@ -264,29 +258,29 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bookings/{booking}/success', [BookingController::class, 'success'])->name('bookings.success');
     Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
     Route::delete('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-
-    Route::get('/api/photographers/{photographer}/packages', [PackageController::class, 'index'])->name('api.packages.index');
     Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+
+    // Client booking availability
+    Route::post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('availabilities.book');
 });
 
-// Client booking availability
-Route::middleware(['auth'])->post('/availabilities/{id}/book', [AvailabilityController::class, 'book'])->name('availabilities.book');
-
-// API Routes
+// API Routes (authenticated)
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/photographers/{photographerId}/availability', [AvailabilityController::class, 'getPhotographerAvailability']);
     Route::get('/photographers/{photographerId}/availability/date', [AvailabilityController::class, 'getAvailabilityByDate']);
+    Route::get('/photographers/{photographer}/packages', [PackageController::class, 'index'])->name('api.packages.index');
     Route::post('/packages/{package}/calculate-price', [PackageController::class, 'calculatePrice'])->name('api.packages.calculate_price');
     Route::get('/photographers/available', [ChatController::class, 'getAvailablePhotographers'])->name('api.photographers.available');
     Route::get('/photographer/conversations', [ChatController::class, 'getPhotographerConversations'])->name('api.photographer.conversations');
+    Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])->name('api.chat.unreadCount');
 });
 
-// Public API
+// Public API Routes
 Route::prefix('api')->group(function () {
     Route::get('/photographers/{photographerId}/availability/public', [AvailabilityController::class, 'getPhotographerAvailability']);
 });
 
-// Chat
+// Chat Routes (authenticated)
 Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/', [ChatController::class, 'index'])->name('index');
     Route::get('/photographers', [ChatController::class, 'showPhotographers'])->name('photographers');
@@ -296,12 +290,7 @@ Route::middleware(['auth', 'web'])->prefix('chat')->name('chat.')->group(functio
     Route::post('/create', [ChatController::class, 'createConversation'])->name('create');
 });
 
-// Standalone chat unread count route
-Route::get('/api/chat/unread-count', [ChatController::class, 'unreadCount'])
-    ->name('api.chat.unreadCount')
-    ->middleware('auth');
-
-// Message Routes
+// Message Routes (authenticated)
 Route::middleware(['auth', 'web'])->group(function () {
     Route::post('/messages/{message}/read', [ChatController::class, 'markAsRead'])->name('messages.read');
     Route::delete('/messages/{message}', [ChatController::class, 'deleteMessage'])->name('messages.delete');
@@ -316,18 +305,19 @@ Route::middleware(['auth', 'web'])->group(function () {
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Laravel Breeze Auth Routes (FIXED - UNIQUE NAMES)
+// Laravel Breeze Auth Routes (Guest only)
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('breeze.register');
-    Route::post('register', [RegisteredUserController::class, 'store'])->name('breeze.register.store');
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('breeze.login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('breeze.login.store');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
+// Laravel Breeze Auth Routes (Authenticated only)
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)->name('verification.notice');
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)

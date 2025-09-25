@@ -57,7 +57,7 @@
                 <!-- Registration Form -->
                 <p class="text-green-600 text-sm mb-3 font-medium">You're verified! Complete your registration:</p>
 
-                <form method="POST" action="{{ route('photographer.register.alternative.store') }}" class="space-y-5">
+                <form method="POST" action="{{ route('photographer.register.store') }}" class="space-y-5">
                     @csrf
 
                     <input type="text" name="name" placeholder="Full Name"

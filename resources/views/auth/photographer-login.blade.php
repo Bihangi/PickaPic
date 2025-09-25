@@ -47,7 +47,7 @@
             <input type="password" name="password" placeholder="Enter Password"
                    class="w-full px-4 py-2 mt-1 mb-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 
-            <a href="{{ route('password.request', ['type' => 'photographer']) }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
+            <a href="{{ route('password.request') }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
 
             <button type="submit"
                     class="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition">
@@ -57,15 +57,15 @@
 
         <div class="text-center text-gray-500 my-4">Or</div>
 
-        <a href="{{ url('/auth/google') }}"
+        <a href="{{ route('auth.google') }}"
            class="flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition">
             <img src="https://img.icons8.com/color/48/000000/google-logo.png" class="h-5 mr-2" />
             Sign in with Google
         </a>
 
         <div class="text-center text-sm mt-5">
-            Don’t have an account?
-            <a href="{{ route('breeze.register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
+            Don't have an account?
+            <a href="{{ route('photographer.registration.form') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
         </div>
     </div>
 
