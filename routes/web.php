@@ -112,9 +112,13 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration Routes =
-Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('photographer.registers.form');
-Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])->name('photographer.register.submit');
+// Photographer Registration Routes 
+Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])
+    ->name('photographer.register.form');
+
+Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])
+    ->name('photographer.register.submit');
+
 
 // Alternative photographer registration form 
 Route::get('/register/photographer', function (Request $request) {
