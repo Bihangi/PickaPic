@@ -114,21 +114,18 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration - CLEANED UP VERSION
+// Photographer Registration 
 Route::prefix('photographer')->name('photographer.')->group(function () {
-    // Show registration form (handles both regular and Google OAuth flow)
     Route::get('/register', [PhotographerRegisterController::class, 'showRegistrationForm'])->name('register');
-    
-    // Process registration
     Route::post('/register', [PhotographerRegisterController::class, 'register'])->name('register.submit');
 });
 
-// Alternative photographer registration route (if needed for backward compatibility)
+// Alternative photographer registration routes 
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.register.form');
+})->name('photographer.register.form.alt');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -170,7 +167,7 @@ Route::post('/register/photographer', function (Request $request) {
     Session::forget(['google_auth_completed', 'google_user_data']);
 
     return redirect()->route('verification.pending');
-})->name('photographer.register.store');
+})->name('photographer.register.store.alt');
 
 // Verification Pending Views
 Route::view('/verification-pending', 'auth.verification_pending')->name('auth.verification_pending');
@@ -229,7 +226,7 @@ Route::middleware(['auth'])->prefix('photographer')->name('photographer.')->grou
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleCallback'])->name('auth.google.callback');
 
-// Profile Management (auth required)
+// Profile Management 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -264,7 +261,7 @@ Route::get('/categories', function () {
     return view('client.categories');
 })->name('categories');
 
-// Photographer Listings (Public)
+// Photographer Listings
 Route::prefix('photographers')->group(function () {
     Route::get('/', [ClientPhotographerController::class, 'index'])->name('photographers.index');
     Route::get('/{id}', [ClientPhotographerController::class, 'show'])->name('photographers.show');
