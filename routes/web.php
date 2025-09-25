@@ -112,20 +112,19 @@ Route::get('/photographer/login', [PhotographerLoginController::class, 'showLogi
 Route::post('/photographer/login', [PhotographerLoginController::class, 'login'])->name('photographer.login.submit');
 Route::post('/photographer/logout', [PhotographerLoginController::class, 'logout'])->name('photographer.logout');
 
-// Photographer Registration Routes 
+// Photographer Registration Routes (FIXED - UNIQUE NAMES)
 Route::get('/photographer/register', [PhotographerRegisterController::class, 'showRegistrationForm'])
     ->name('photographer.register.form');
 
 Route::post('/photographer/register', [PhotographerRegisterController::class, 'register'])
     ->name('photographer.register.submit');
 
-
-// Alternative photographer registration form 
+// Alternative photographer registration form (FIXED - UNIQUE NAMES)
 Route::get('/register/photographer', function (Request $request) {
     $isVerified = $request->query('verified') === 'true';
     session(['verified_form_submitted' => $isVerified]);
     return view('auth.photographer-register', ['isVerified' => $isVerified]);
-})->name('photographer.registers.alternative');
+})->name('photographer.register.alternative');
 
 Route::post('/register/photographer', function (Request $request) {
     $googleUser = Session::get('google_user_data', null);
@@ -228,10 +227,10 @@ Route::middleware('auth')->group(function () {
 // Choose Role
 Route::view('/choose-role', 'auth.choose-role')->name('choose.role');
 
-// Client
+// Client Routes (FIXED - EXPLICIT NAMES)
 Route::prefix('client')->name('client.')->group(function () {
     Route::get('register', [ClientRegisterController::class, 'showRegisterForm'])->name('register');
-    Route::post('register', [ClientRegisterController::class, 'register']);
+    Route::post('register', [ClientRegisterController::class, 'register'])->name('register.submit');
     Route::get('login', [ClientLoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [ClientLoginController::class, 'login'])->name('login.submit');
     Route::post('logout', [ClientLoginController::class, 'logout'])->name('logout');
@@ -317,12 +316,12 @@ Route::middleware(['auth', 'web'])->group(function () {
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
-// Laravel Breeze Auth Routes
+// Laravel Breeze Auth Routes (FIXED - UNIQUE NAMES)
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('auth.register');
-    Route::post('register', [RegisteredUserController::class, 'store'])->name('auth.register.store');
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('auth.login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('auth.login.store');
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('breeze.register');
+    Route::post('register', [RegisteredUserController::class, 'store'])->name('breeze.register.store');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('breeze.login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('breeze.login.store');
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
