@@ -1,4 +1,3 @@
-{{-- resources/views/photographer/premium-upgrade.blade.php --}}
 @extends('layouts.dashboard')
 
 @section('content')

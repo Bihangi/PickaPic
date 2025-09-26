@@ -2,6 +2,9 @@
 NIXPACKS_PHP_ROOT_DIR = '/'
 NIXPACKS_PHP_FALLBACK_PATH = '/public/index.php'
 
+[providers.php]
+extensions = ["pdo_mysql", "mysqli"]
+
 [phases.build]
 cmds = [
     'composer install --no-dev --optimize-autoloader',
