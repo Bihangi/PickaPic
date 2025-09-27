@@ -9,8 +9,7 @@ return new class extends Migration {
     {
         Schema::table('photographers', function (Blueprint $table) {
             $table->text('bio')->nullable();
-            $table->string('profile_picture')->nullable();
-            $table->json('categories')->nullable();
+            $table->set('categories', ['wedding', 'birthday', 'outdoor', 'fashion'])->nullable();
             $table->string('location')->nullable();
             $table->string('languages')->nullable();
             $table->decimal('hourly_rate', 8, 2)->nullable();
@@ -26,7 +25,6 @@ return new class extends Migration {
         Schema::table('photographers', function (Blueprint $table) {
             $table->dropColumn([
                 'bio',
-                'profile_picture',
                 'categories',
                 'location',
                 'languages',
