@@ -4,7 +4,7 @@
 <main class="bg-gray-50">
 
     {{-- Hero --}}
-    <section class="bg-cover bg-center relative" style="background-image: url('{{ Vite::asset('resources/images/hero.jpeg') }}');">
+    <section class="bg-cover bg-center relative" style="background-image: url('{{ asset('images/hero.jpeg') }}');">
         <div class="bg-black/20 py-12 text-center text-white">
             <h1 class="text-3xl sm:text-4xl font-bold mb-6 text-white">Meet Our Talented Photographers</h1>
 

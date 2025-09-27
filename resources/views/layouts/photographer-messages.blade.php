@@ -40,7 +40,7 @@
                         Back to Dashboard
                     </a>
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-                        <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="w-5 h-5">
+                        <img src="{{ asset('images/logo.png') }}" alt="PickaPic Logo" class="w-5 h-5">
                     </div>
                 </div>
                 

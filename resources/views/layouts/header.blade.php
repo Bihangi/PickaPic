@@ -6,7 +6,7 @@
             <!-- Logo -->
             <div class="flex-shrink-0 transform hover:scale-105 transition-transform duration-300">
                 <div class="relative bg-white/10 backdrop-blur-sm rounded-xl px-2 py-2 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                    <img src="{{ Vite::asset('resources/images/logo.png') }}" 
+                    <img src="{{ asset('images/logo.png') }}" 
                          alt="PickaPic Logo" 
                          class="h-8 sm:h-10 lg:h-12 w-auto filter drop-shadow-lg" />
                 </div>
@@ -59,7 +59,7 @@
                 <!-- User Profile -->
                 <div class="relative group">
                     <button class="flex items-center space-x-2 p-2 rounded-full hover:bg-white/10 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/20">
-                        <img src="{{ Vite::asset('resources/images/profile.png') }}" 
+                        <img src="{{ asset('images/profile.png') }}" 
                              alt="User Profile" 
                              class="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 object-cover rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all duration-300" />
                         <svg class="w-4 h-4 text-gray-300 group-hover:text-white transition-colors duration-300 hidden sm:block" 

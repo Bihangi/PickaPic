@@ -8,7 +8,7 @@
 <body class="relative min-h-screen flex items-center justify-end p-10 overflow-hidden">
 
     <div class="absolute inset-0 bg-cover bg-center blur-m brightness-75 z-0"
-         style="background-image: url('{{ Vite::asset('resources/images/login-bg.jpg') }}');">
+         style="background-image: url('{{ asset('images/login-bg.jpg') }}');">
     </div>
 
     <div class="relative z-10 bg-white p-8 rounded-2xl w-full max-w-md shadow-lg mt-[-20px]">
@@ -25,7 +25,7 @@
         </div>
 
         <div class="flex items-center justify-center gap-4 mb-4">
-            <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16">
             <h2 class="text-xl font-bold font-serif">Photographer Login</h2>
         </div>
 

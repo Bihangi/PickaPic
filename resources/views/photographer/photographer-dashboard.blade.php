@@ -10,7 +10,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="w-8 h-8">
+                        <img src="{{ asset('images/logo.png') }}" alt="PickaPic Logo" class="w-8 h-8">
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold">PickaPic Dashboard</h1>

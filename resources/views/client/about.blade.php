@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="flex justify-center lg:justify-end">
-                <img src="{{ Vite::asset('resources/images/studio.jpg') }}" 
+                <img src="{{ asset('images/studio.jpg') }}" 
                      alt="Professional Photography Studio"
                      class="rounded-2xl w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] shadow-xl border-[6px] border-white transform hover:scale-105 transition-transform duration-300">
             </div>
@@ -47,7 +47,7 @@
     <section class="px-4 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 bg-gradient-to-br from-[#fafafa] to-[#f0f0f0]">
         <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div class="flex justify-center lg:justify-start order-2 lg:order-1">
-                <img src="{{ Vite::asset('resources/images/mission.jpg') }}" 
+                <img src="{{ asset('images/mission.jpg') }}" 
                      alt="Our Mission"
                      class="rounded-2xl w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] shadow-xl border-[6px] border-white transform hover:scale-105 transition-transform duration-300">
             </div>
@@ -90,7 +90,7 @@
                 </div>
             </div>
             <div class="flex justify-center lg:justify-end">
-                <img src="{{ Vite::asset('resources/images/vision.jpg') }}" 
+                <img src="{{ asset('images/vision.jpg') }}" 
                      alt="Our Vision"
                      class="rounded-2xl w-full max-w-[400px] sm:max-w-[450px] md:max-w-[500px] shadow-xl border-[6px] border-white transform hover:scale-105 transition-transform duration-300">
             </div>

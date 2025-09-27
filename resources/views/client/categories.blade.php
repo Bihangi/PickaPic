@@ -28,7 +28,7 @@
               Premium Package
             </span>
           </div>
-          <img src="{{ Vite::asset('resources/images/wedding.jpg') }}" 
+          <img src="{{ asset('images/wedding.jpg') }}" 
                alt="Wedding Photography" 
                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
@@ -86,7 +86,7 @@
               Celebration Package
             </span>
           </div>
-          <img src="{{ Vite::asset('resources/images/birthday.jpeg') }}" 
+          <img src="{{ asset('images/birthday.jpeg') }}" 
                alt="Birthday Party Photography" 
                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
@@ -143,7 +143,7 @@
               Natural Light
             </span>
           </div>
-          <img src="{{ Vite::asset('resources/images/outdoor.jpeg') }}" 
+          <img src="{{ asset('images/outdoor.jpeg') }}" 
                alt="Outdoor Party Photography" 
                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
@@ -200,7 +200,7 @@
               Portrait Studio
             </span>
           </div>
-          <img src="{{ Vite::asset('resources/images/fashion.jpeg') }}" 
+          <img src="{{ asset('images/fashion.jpeg') }}" 
                alt="Fashion Photography" 
                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>

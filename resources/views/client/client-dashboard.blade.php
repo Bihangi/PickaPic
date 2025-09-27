@@ -27,7 +27,7 @@
   <div class="flex justify-center lg:justify-end relative z-10">
     <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl -z-10 blur-lg opacity-60"></div>
       <div class="relative group">
-        <img src="{{ Vite::asset('resources/images/camera-guy.jpg') }}" alt="Professional Photographer" class="rounded-2xl w-full max-w-[500px] shadow-2xl border-4 border-white transform group-hover:scale-105 transition-all duration-500">
+        <img src="{{ asset('images/camera-guy.jpg') }}" alt="Professional Photographer" class="rounded-2xl w-full max-w-[500px] shadow-2xl border-4 border-white transform group-hover:scale-105 transition-all duration-500">
           <div class="absolute inset-0 rounded-2xl bg-gradient-to-t from-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
   </div>

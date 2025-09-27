@@ -8,13 +8,13 @@
     <title>Photographer Registration</title>
 </head>
 <body class="min-h-screen bg-cover bg-center flex justify-center py-10 px-4 sm:px-6"
-      style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
+      style="background-image: url('{{ asset('images/image.png') }}');">
 
     <div class="bg-white/90 backdrop-blur-md w-full max-w-2xl mx-auto flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl max-h-[90vh]">
 
         <!-- Left Side: Image -->
         <div class="w-full md:w-1/2 hidden md:block">
-            <img src="{{ Vite::asset('resources/images/register-bg.jpg') }}"
+            <img src="{{ asset('images/register-bg.jpg') }}"
                  alt="Photographer" class="w-full h-full object-cover">
         </div>
 

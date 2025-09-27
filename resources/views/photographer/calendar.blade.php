@@ -13,7 +13,7 @@
                         <i class="fas fa-arrow-left text-xl"></i>
                     </a>
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="PickaPic Logo" class="w-8 h-8">
+                        <img src="{{ asset('images/logo.png') }}" alt="PickaPic Logo" class="w-8 h-8">
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold">My Calendar</h1>
