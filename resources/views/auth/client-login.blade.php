@@ -28,7 +28,7 @@
         </div>
 
         <div class="flex items-center justify-center gap-4 mb-4">
-            <img src="url{{ asset('images/logo.png') }}" alt="Logo" class="h-16">
+            <img src="url('{{ asset('images/logo.png') }}')" alt="Logo" class="h-16">
             <h2 class="text-xl font-bold font-serif">Client Login</h2>
         </div>
 
