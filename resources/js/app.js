@@ -4,6 +4,9 @@ import Alpine from 'alpinejs';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
+import '../images/client-bg1.png';
+import '../images/logo.png';
+
 window.Alpine = Alpine;
 window.Pusher = Pusher;
 

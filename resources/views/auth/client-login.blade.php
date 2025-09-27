@@ -9,7 +9,7 @@
 
     <!-- Background Image -->
     <div class="absolute inset-0 bg-cover bg-center  brightness-75 z-0"
-         style="background-image: url('{{ Vite::asset('resources/images/client-bg1.png') }}');">
+         style="background-image: url('{{ asset('images/client-bg1.png') }}');">
     </div>
 
     
@@ -28,7 +28,7 @@
         </div>
 
         <div class="flex items-center justify-center gap-4 mb-4">
-            <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
+            <img src="url{{ asset('images/logo.png') }}" alt="Logo" class="h-16">
             <h2 class="text-xl font-bold font-serif">Client Login</h2>
         </div>
 
