@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('custom_hours')->nullable();
             $table->text('special_requirements')->nullable();
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled', 'declined'])->default('pending');
             $table->timestamps();
         });
     }

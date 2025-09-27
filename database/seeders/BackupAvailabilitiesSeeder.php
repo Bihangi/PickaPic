@@ -1,0 +1,128 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class BackupAvailabilitiesSeeder extends Seeder
+{
+    public function run()
+    {
+        DB::table('availabilities')->insert([
+            [
+                'id' => 4,
+                'photographer_id' => 9,
+                'date' => '2025-09-22',
+                'start_time' => '15:00:00',
+                'end_time' => '20:00:00',
+                'status' => 'booked',
+                'client_id' => null,
+                'booking_id' => 3,
+                'event_details' => 'Need you to cover an outdoor engagement party',
+                'contact_number' => 0721234567,
+                'created_at' => '2025-09-19 05:01:10',
+                'updated_at' => '2025-09-19 16:26:24',
+            ],
+            [
+                'id' => 5,
+                'photographer_id' => 9,
+                'date' => '2025-09-23',
+                'start_time' => '13:00:00',
+                'end_time' => '17:00:00',
+                'status' => 'available',
+                'client_id' => null,
+                'booking_id' => null,
+                'event_details' => null,
+                'contact_number' => null,
+                'created_at' => '2025-09-20 05:11:42',
+                'updated_at' => '2025-09-20 05:11:42',
+            ],
+            [
+                'id' => 6,
+                'photographer_id' => 9,
+                'date' => '2025-09-23',
+                'start_time' => '06:30:00',
+                'end_time' => '12:30:00',
+                'status' => 'booked',
+                'client_id' => null,
+                'booking_id' => 4,
+                'event_details' => 'Wedding',
+                'contact_number' => 0721234567,
+                'created_at' => '2025-09-20 05:46:06',
+                'updated_at' => '2025-09-23 03:38:10',
+            ],
+            [
+                'id' => 7,
+                'photographer_id' => 9,
+                'date' => '2025-09-30',
+                'start_time' => '06:00:00',
+                'end_time' => '12:00:00',
+                'status' => 'booked',
+                'client_id' => null,
+                'booking_id' => 5,
+                'event_details' => 'Outdoor Birthday Party Photoshoot',
+                'contact_number' => 0721234567,
+                'created_at' => '2025-09-25 05:31:49',
+                'updated_at' => '2025-09-25 05:32:35',
+            ],
+            [
+                'id' => 8,
+                'photographer_id' => 9,
+                'date' => '2025-09-29',
+                'start_time' => '06:00:00',
+                'end_time' => '12:00:00',
+                'status' => 'booked',
+                'client_id' => null,
+                'booking_id' => 7,
+                'event_details' => 'Engagement',
+                'contact_number' => 0776655443,
+                'created_at' => '2025-09-25 05:45:02',
+                'updated_at' => '2025-09-25 05:46:06',
+            ],
+            [
+                'id' => 9,
+                'photographer_id' => 9,
+                'date' => '2025-10-02',
+                'start_time' => '12:00:00',
+                'end_time' => '17:00:00',
+                'status' => 'available',
+                'client_id' => null,
+                'booking_id' => null,
+                'event_details' => null,
+                'contact_number' => null,
+                'created_at' => '2025-09-25 05:50:58',
+                'updated_at' => '2025-09-25 05:50:58',
+            ],
+            [
+                'id' => 10,
+                'photographer_id' => 11,
+                'date' => '2025-10-01',
+                'start_time' => '08:00:00',
+                'end_time' => '12:00:00',
+                'status' => 'available',
+                'client_id' => null,
+                'booking_id' => null,
+                'event_details' => null,
+                'contact_number' => null,
+                'created_at' => '2025-09-25 09:58:52',
+                'updated_at' => '2025-09-25 09:58:52',
+            ],
+            [
+                'id' => 11,
+                'photographer_id' => 11,
+                'date' => '2025-10-01',
+                'start_time' => '14:00:00',
+                'end_time' => '19:00:00',
+                'status' => 'available',
+                'client_id' => null,
+                'booking_id' => null,
+                'event_details' => null,
+                'contact_number' => null,
+                'created_at' => '2025-09-25 10:00:00',
+                'updated_at' => '2025-09-25 10:00:00',
+            ],
+        ]);
+    }
+}
