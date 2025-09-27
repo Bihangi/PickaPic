@@ -84,8 +84,7 @@
           <div onclick="navigateTo('{{ route('admin.login') }}')" class="role-card group">
             <div class="flex flex-col items-center justify-center h-full">
               <img 
-                id="admin-logo-img" 
-                src="" 
+                src="{{ asset('images/admin-logo.png') }}" 
                 alt="Admin" 
                 class="mx-auto mb-4 sm:mb-6 w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 object-contain transition-transform duration-300 group-hover:scale-110"
               >
@@ -99,8 +98,7 @@
           <div onclick="navigateTo('{{ route('photographer.login') }}')" class="role-card group">
             <div class="flex flex-col items-center justify-center h-full">
               <img 
-                id="photographer-logo-img" 
-                src="" 
+                src="{{ asset('images/photographer-logo.png') }}" 
                 alt="Photographer" 
                 class="mx-auto mb-4 sm:mb-6 w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 object-contain transition-transform duration-300 group-hover:scale-110"
               >
@@ -114,8 +112,7 @@
           <div onclick="navigateTo('{{ route('client.login') }}')" class="role-card group sm:col-span-2 lg:col-span-1">
             <div class="flex flex-col items-center justify-center h-full">
               <img 
-                id="client-logo-img" 
-                src="" 
+                src="{{ asset('images/client-logo.png') }}" 
                 alt="Client" 
                 class="mx-auto mb-4 sm:mb-6 w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 object-contain transition-transform duration-300 group-hover:scale-110"
               >
@@ -136,13 +133,6 @@
 </div>
 
 <script>
-  // Set the image sources after the JavaScript loads
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.adminLogo) document.getElementById('admin-logo-img').src = window.adminLogo;
-    if (window.photographerLogo) document.getElementById('photographer-logo-img').src = window.photographerLogo;
-    if (window.clientLogo) document.getElementById('client-logo-img').src = window.clientLogo;
-  });
-
   function navigateTo(url) {
     // Add a small delay for visual feedback on mobile
     const isMobile = window.innerWidth <= 768;
