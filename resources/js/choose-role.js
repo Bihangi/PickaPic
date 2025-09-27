@@ -1,14 +1,10 @@
-// Import logo images and make them globally available
-import adminLogo from '../images/admin-logo.png';
-import photographerLogo from '../images/photographer-logo.png';
-import clientLogo from '../images/client-logo.png';
-
-// Make logos globally available for the blade template
-window.adminLogo = adminLogo;
-window.photographerLogo = photographerLogo;
-window.clientLogo = clientLogo;
-
-const backgrounds = [bg1, bg2, bg3, bg4];
+// Use public asset paths instead of imports
+const backgrounds = [
+  '/images/bg1.jpg',
+  '/images/bg2.jpg', 
+  '/images/bg3.jpg',
+  '/images/bg4.jpg'
+];
 
 let current = 0;
 const sliderContainer = document.getElementById('slider-container');
