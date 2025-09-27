@@ -1,8 +1,18 @@
+// Import background images
+import bg1 from '../images/bg1.jpg';
+import bg2 from '../images/bg2.jpg';
+import bg3 from '../images/bg3.jpg';
+import bg4 from '../images/bg4.jpg';
 
-import bg1 from '/resources/images/bg1.jpg';
-import bg2 from '/resources/images/bg2.jpg';
-import bg3 from '/resources/images/bg3.jpg';
-import bg4 from '/resources/images/bg4.jpg';
+// Import logo images and make them globally available
+import adminLogo from '../images/admin-logo.png';
+import photographerLogo from '../images/photographer-logo.png';
+import clientLogo from '../images/client-logo.png';
+
+// Make logos globally available for the blade template
+window.adminLogo = adminLogo;
+window.photographerLogo = photographerLogo;
+window.clientLogo = clientLogo;
 
 const backgrounds = [bg1, bg2, bg3, bg4];
 

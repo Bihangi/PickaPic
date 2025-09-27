@@ -34,18 +34,18 @@
         <h1 class="text-4xl md:text-5xl font-bold mb-12 tracking-wide">Choose Your Role</h1>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-7 max-w-6xl mx-auto">
           <div onclick="navigateTo('{{ route('admin.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/admin-logo.png') }}" alt="Admin" class="mx-auto mb-6 w-[72px]">
+            <img id="admin-logo-img" src="" alt="Admin" class="mx-auto mb-6 w-[72px]">
             <h2 class="text-2xl font-semibold text-black">Admin</h2>
           </div>
 
           <div onclick="navigateTo('{{ route('photographer.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/photographer-logo.png') }}" alt="Photographer" class="mx-auto mb-6 w-[72px]"/>
+            <img id="photographer-logo-img" src="" alt="Photographer" class="mx-auto mb-6 w-[72px]"/>
             <h2 class="text-2xl font-semibold text-black">Photographer</h2>
           </div>
 
           <div onclick="navigateTo('{{ route('client.login') }}')" class="card role-card">
-            <img src="{{ Vite::asset('resources/images/client-logo.png') }}" alt="User" class="mx-auto mb-6 w-[72px]"/>
-            <h2 class="text-2xl font-semibold text-black">Client</h2>
+            <img id="client-logo-img" src="" alt="User" class="mx-auto mb-6 w-[72px]"/>
+            <h2 class="text-2xl font-semibent text-black">Client</h2>
           </div>
         </div>
       </div>
@@ -54,6 +54,13 @@
 </div>
 
 <script>
+  // Set the image sources after the JavaScript loads
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.adminLogo) document.getElementById('admin-logo-img').src = window.adminLogo;
+    if (window.photographerLogo) document.getElementById('photographer-logo-img').src = window.photographerLogo;
+    if (window.clientLogo) document.getElementById('client-logo-img').src = window.clientLogo;
+  });
+
   function navigateTo(url) {
     window.location.href = url;
   }
