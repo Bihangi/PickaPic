@@ -8,8 +8,14 @@ extensions = ["pdo_mysql", "mysqli"]
 [phases.build]
 cmds = [
     'composer install --no-dev --optimize-autoloader',
-    'npm ci',
+    'npm install',
     'npm run build',
+    'ls -la public/build/',
+    'ls -la public/build/.vite/ || echo "No .vite directory"',
+    'cp public/build/.vite/manifest.json public/build/manifest.json || echo "Manifest copy failed"',
+    'ls -la public/build/manifest.json || echo "Manifest not found after copy"',
+    'php artisan config:clear',
+    'php artisan cache:clear',
     'php artisan config:cache',
     'php artisan route:cache',
     'php artisan view:cache'

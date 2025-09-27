@@ -10,10 +10,11 @@ export default defineConfig({
                 'resources/js/choose-role.js'
             ],
             refresh: true,
+            buildDirectory: 'build', 
         }),
     ], build: {
         outDir: 'public/build',
-        manifest: true,
+        manifest: 'manifest.json', 
         rollupOptions: {
             output: {
                 manualChunks: undefined,
