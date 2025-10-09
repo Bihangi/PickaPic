@@ -295,7 +295,7 @@ document.getElementById('profile_image').addEventListener('change', function(e) 
 // Function to reset to original image
 function resetToOriginalImage() {
     const previewContainer = document.getElementById('profile-preview');
-    const originalImage = '{{ $photographer->profile_image && Storage::disk("public")->exists($photographer->profile_image) ? asset("storage/".$photographer->profile_image) : "" }}';
+    const originalImage = '{{ $photographer->profile_image && Storage::disk("public")->exists($photographer->profile_image) ? asset("images/".$photographer->profile_image) : "" }}';
     const originalInitial = '{{ substr($photographer->user->name, 0, 1) }}';
     
     if (originalImage) {
@@ -499,7 +499,7 @@ function closeModal(modalId) {
         form.reset();
         
         // Reset profile image preview
-        const originalImage = '{{ $photographer->profile_image && Storage::disk("public")->exists($photographer->profile_image) ? asset("storage/".$photographer->profile_image) : "" }}';
+        const originalImage = '{{ $photographer->profile_image && Storage::disk("public")->exists($photographer->profile_image) ? asset("images/".$photographer->profile_image) : "" }}';
         const originalInitial = '{{ substr($photographer->user->name, 0, 1) }}';
         
         if (originalImage) {
