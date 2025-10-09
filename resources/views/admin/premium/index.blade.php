@@ -122,7 +122,7 @@
                                 <div class="flex-shrink-0 h-10 w-10 relative">
                                     @if($request->photographer->profile_image)
                                         <img class="h-10 w-10 rounded-full object-cover" 
-                                             src="{{ asset('storage/'.$request->photographer->profile_image) }}" 
+                                             src="{{ asset('images/'.$request->photographer->profile_image) }}" 
                                              alt="{{ $request->photographer->user->name }}">
                                     @else
                                         <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">

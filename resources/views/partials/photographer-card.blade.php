@@ -16,7 +16,7 @@
         <!-- Photographer Image -->
         <div class="relative flex-shrink-0 self-start">
             <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
-                <img src="{{ $photographer->profile_image ? asset('storage/' . ltrim($photographer->profile_image, '/')) : asset('images/default-avatar.jpg') }}"
+                <img src="{{ $photographer->profile_image ? asset('images/' . ltrim($photographer->profile_image, '/')) : asset('images/default-avatar.jpg') }}"
                      alt="{{ $photographer->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
             </div>
             <div class="absolute -top-2 -right-2 bg-black text-white text-xs px-3 py-1 rounded-full shadow-md">

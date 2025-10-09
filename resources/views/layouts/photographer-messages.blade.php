@@ -48,7 +48,7 @@
                     <!-- Photographer Profile Info -->
                     <div class="flex items-center space-x-3">
                         @if(Auth::user()->photographer && Auth::user()->photographer->profile_image && Storage::disk('public')->exists(Auth::user()->photographer->profile_image))
-                            <img src="{{ asset('storage/'.Auth::user()->photographer->profile_image) }}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
+                            <img src="{{ asset('images/'.Auth::user()->photographer->profile_image) }}" alt="Profile" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
                         @else
                             <div class="w-8 h-8 rounded-full border border-gray-200 bg-gray-700 flex items-center justify-center">
                                 <span class="text-white font-bold text-sm">{{ substr(Auth::user()->name, 0, 1) }}</span>

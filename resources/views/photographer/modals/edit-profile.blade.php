@@ -25,7 +25,7 @@
                                  class="w-24 h-24 rounded-full border-4 border-gray-200 overflow-hidden cursor-pointer hover:border-gray-300 transition-colors"
                                  onclick="document.getElementById('profile_image').click()">
                                 @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
-                                    <img id="profile-preview" src="{{ asset('storage/'.$photographer->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
+                                    <img id="profile-preview" src="{{ asset('images/'.$photographer->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
                                 @else
                                     <div id="profile-preview" class="w-full h-full bg-gray-700 flex items-center justify-center">
                                         <span class="text-white font-bold text-2xl">{{ substr($photographer->user->name, 0, 1) }}</span>

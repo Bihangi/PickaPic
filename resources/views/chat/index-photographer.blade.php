@@ -37,7 +37,7 @@
                             <!-- Avatar -->
                             <div class="flex-shrink-0">
                                 @if($otherUser->profile_image)
-                                    <img src="{{ asset('storage/' . $otherUser->profile_image) }}" alt="{{ $otherUser->name }}" class="w-12 h-12 rounded-full object-cover shadow-md">
+                                    <img src="{{ asset('images/' . $otherUser->profile_image) }}" alt="{{ $otherUser->name }}" class="w-12 h-12 rounded-full object-cover shadow-md">
                                 @else
                                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md">
                                         {{ strtoupper(substr($otherUser->name, 0, 1)) }}

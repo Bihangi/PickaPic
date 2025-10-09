@@ -65,7 +65,7 @@
                         <button onclick="toggleUserMenu()" class="flex items-center space-x-3 text-gray-700 hover:text-gray-900 focus:outline-none">
                             @if(auth()->user()->photographer && auth()->user()->photographer->profile_image)
                                 <img class="h-8 w-8 rounded-full object-cover" 
-                                     src="{{ asset('storage/'.auth()->user()->photographer->profile_image) }}" 
+                                     src="{{ asset('images/'.auth()->user()->photographer->profile_image) }}" 
                                      alt="{{ auth()->user()->name }}">
                             @else
                                 <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">

@@ -36,7 +36,7 @@
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
                             @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
-                                <img src="{{ asset('storage/'.$photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                                <img src="{{ asset('images/'.$photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
                             @else
                                 <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-700 flex items-center justify-center">
                                     <span class="text-white font-bold">{{ substr($photographer->user->name, 0, 1) }}</span>
@@ -131,7 +131,7 @@
                     <div class="gradient-bg p-6 text-white text-center">
                         <div class="relative inline-block">
                             @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
-                                <img src="{{ asset('storage/'.$photographer->profile_image) }}" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white mx-auto object-cover">
+                                <img src="{{ asset('images/'.$photographer->profile_image) }}" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white mx-auto object-cover">
                             @else
                                 <div class="w-20 h-20 rounded-full border-4 border-white mx-auto bg-gray-700 flex items-center justify-center">
                                     <span class="text-white font-bold text-2xl">{{ substr($photographer->user->name, 0, 1) }}</span>
@@ -385,7 +385,7 @@
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 @foreach($portfolios as $portfolio)
                                     <div class="portfolio-item group relative">
-                                        <img src="{{ asset('storage/'.$portfolio->file_path) }}" alt="{{ $portfolio->title ?? 'Portfolio' }}" class="w-full h-full object-cover rounded-lg">
+                                        <img src="{{ asset('images/'.$portfolio->file_path) }}" alt="{{ $portfolio->title ?? 'Portfolio' }}" class="w-full h-full object-cover rounded-lg">
                                         <div class="portfolio-overlay">
                                             <div class="text-white">
                                                 <h4 class="font-semibold">{{ $portfolio->title ?? 'Untitled' }}</h4>

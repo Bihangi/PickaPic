@@ -21,7 +21,7 @@
                 <div class="flex-shrink-0 h-16 w-16">
                     @if($premiumRequest->photographer->profile_image)
                         <img class="h-16 w-16 rounded-full object-cover border-4 border-white shadow-md" 
-                             src="{{ asset('storage/'.$premiumRequest->photographer->profile_image) }}" 
+                             src="{{ asset('images/'.$premiumRequest->photographer->profile_image) }}" 
                              alt="{{ $premiumRequest->photographer->user->name }}">
                     @else
                         <div class="h-16 w-16 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center border-4 border-white shadow-md">

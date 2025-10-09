@@ -21,7 +21,7 @@
         <!-- Profile Image -->
         <div class="relative flex-shrink-0 mx-auto lg:mx-0">
           <div class="w-40 h-40 sm:w-48 sm:h-48 lg:w-52 lg:h-52 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/50">
-            <img src="{{ $photographer->profile_image ? asset('storage/'.$photographer->profile_image) : asset('images/default-photographer.jpg') }}"
+            <img src="{{ $photographer->profile_image ? asset('images/'.$photographer->profile_image) : asset('images/default-photographer.jpg') }}"
                  alt="{{ $photographer->name }}" 
                  class="w-full h-full object-cover">
           </div>

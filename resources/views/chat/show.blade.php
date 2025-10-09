@@ -13,7 +13,7 @@
                 </a>
                 <div class="flex items-center space-x-3">
                     @if($otherUser->profile_image)
-                        <img src="{{ asset('storage/' . $otherUser->profile_image) }}" alt="{{ $otherUser->name }}" class="w-10 h-10 rounded-full object-cover shadow-md">
+                        <img src="{{ asset('images/' . $otherUser->profile_image) }}" alt="{{ $otherUser->name }}" class="w-10 h-10 rounded-full object-cover shadow-md">
                     @else
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
                             {{ strtoupper(substr($otherUser->name, 0, 1)) }}

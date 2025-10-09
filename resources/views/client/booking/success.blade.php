@@ -40,7 +40,7 @@
           <h3 class="text-xl font-bold text-gray-900 mb-4">Your Photographer</h3>
           <div class="flex items-center gap-4">
             <div class="w-16 h-16 rounded-full overflow-hidden">
-              <img src="{{ $booking->photographer->profile_image ? asset('storage/'.$booking->photographer->profile_image) : asset('images/default-photographer.jpg') }}"
+              <img src="{{ $booking->photographer->profile_image ? asset('images/'.$booking->photographer->profile_image) : asset('images/default-photographer.jpg') }}"
                    alt="{{ $booking->photographer->name }}" 
                    class="w-full h-full object-cover">
             </div>

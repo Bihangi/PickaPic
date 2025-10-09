@@ -26,7 +26,7 @@
                     </svg>
                 </a>
                 @if($otherUser->profile_image)
-                    <img src="{{ asset('storage/' . $otherUser->profile_image) }}" 
+                    <img src="{{ asset('images/' . $otherUser->profile_image) }}" 
                          alt="{{ $otherUser->name }}" 
                          class="w-10 h-10 rounded-full object-cover shadow-md">
                 @else

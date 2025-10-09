@@ -16,7 +16,7 @@
                     <!-- Client Avatar -->
                     <div class="flex-shrink-0">
                         @if($client && $client->profile_image)
-                            <img src="{{ asset('storage/' . $client->profile_image) }}" 
+                            <img src="{{ asset('images/' . $client->profile_image) }}" 
                                  alt="{{ $client->name }}" 
                                  class="w-12 h-12 rounded-full object-cover shadow-md">
                         @else
