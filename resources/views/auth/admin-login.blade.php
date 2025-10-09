@@ -11,7 +11,7 @@
 
   <!-- Background Image -->
   <div class="absolute inset-0 bg-cover bg-center brightness-75 z-0"
-       style="background-image: url('{{ Vite::asset('resources/images/admin-bg.png') }}');">
+       style="background-image: url('{{ asset('images/admin-bg.png') }}');">
   </div>
 
   <!-- Login Card -->
@@ -29,7 +29,7 @@
     </div>
 
     <div class="flex items-center justify-center gap-4 mb-4">
-      <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
+      <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16">
       <h2 class="text-xl font-bold font-serif">Admin Login</h2>
     </div>
 

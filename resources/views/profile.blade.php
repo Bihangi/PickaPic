@@ -16,7 +16,7 @@
 
     <!-- User Info Header -->
     <div class="flex flex-col md:flex-row items-center gap-6 mb-10">
-        <img src="{{ Vite::asset('resources/images/profile.png') }}" alt="Profile Avatar"
+        <img src="{{ asset('images/profile.png') }}" alt="Profile Avatar"
              class="w-28 h-28 rounded-full border-4 border-gray-300 shadow-md" />
         <div class="text-center md:text-left">
             <h2 class="text-3xl font-bold">My Profile</h2>

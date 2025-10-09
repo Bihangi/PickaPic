@@ -19,7 +19,7 @@ class ClientLoginController extends Controller
 
         if (Auth::attempt($credentials, $request->remember)) {
             if (Auth::user()->role === 'client') {
-                return redirect()->intended('/client/dashboard');
+                return redirect()->route('client.dashboard');
             }
 
             Auth::logout(); 

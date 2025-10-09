@@ -1,10 +1,10 @@
-
-import bg1 from '/resources/images/bg1.jpg';
-import bg2 from '/resources/images/bg2.jpg';
-import bg3 from '/resources/images/bg3.jpg';
-import bg4 from '/resources/images/bg4.jpg';
-
-const backgrounds = [bg1, bg2, bg3, bg4];
+// Use public asset paths instead of imports
+const backgrounds = [
+  '/images/bg1.jpg',
+  '/images/bg2.jpg', 
+  '/images/bg3.jpg',
+  '/images/bg4.jpg'
+];
 
 let current = 0;
 const sliderContainer = document.getElementById('slider-container');

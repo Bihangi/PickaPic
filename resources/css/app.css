@@ -17,3 +17,13 @@
 .overlay {
   @apply absolute inset-0 bg-black/70 z-10;
 }
+
+.available-day {
+    background-color: #d1fae5 !important; /* green-100 */
+}
+.booked-day {
+    background-color: #fde68a !important; /* amber-200 */
+}
+.unavailable-day {
+    background-color: #fecaca !important; /* red-200 */
+}

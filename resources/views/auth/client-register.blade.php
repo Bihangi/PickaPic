@@ -9,7 +9,7 @@
 
     <!-- Background Image -->
     <div class="absolute inset-0 z-0">
-        <img src="{{ Vite::asset('resources/images/client-bg2.jpg') }}" 
+        <img src="{{ asset('images/client-bg2.jpg') }}" 
              class="w-full h-full object-cover brightness-75" 
              alt="Background">
     </div>

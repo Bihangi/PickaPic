@@ -22,7 +22,7 @@ class PhotographerLoginController extends Controller
 
             // Check role here
             if ($user->role === 'photographer') {
-                return redirect()->route('photographer.dashboard');
+                return redirect()->route('photographer.dashboard.index');
             }
 
             // Not a photographer: Logout and redirect back
@@ -48,6 +48,6 @@ class PhotographerLoginController extends Controller
 
     public function index()
     {
-        return view('photographer-dashboard');
+        return view('photographer.photographer-dashboard');
     }
 }

@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photographer Login</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="relative min-h-screen flex items-center justify-end p-10 overflow-hidden">
+<body class="relative min-h-screen flex items-center justify-end sm:justify-end justify-center p-4 sm:p-6 lg:p-10 overflow-hidden">
 
     <div class="absolute inset-0 bg-cover bg-center blur-m brightness-75 z-0"
-         style="background-image: url('{{ Vite::asset('resources/images/login-bg.jpg') }}');">
+         style="background-image: url('{{ asset('images/login-bg.jpg') }}');">
     </div>
 
-    <div class="relative z-10 bg-white p-8 rounded-2xl w-full max-w-md shadow-lg mt-[-20px]">
+    <div class="relative z-10 bg-white p-6 sm:p-8 rounded-2xl w-full max-w-sm sm:max-w-md shadow-lg mt-0 sm:mt-[-20px]">
         
         {{-- Back Arrow --}}
         <div class="mb-4">
@@ -24,12 +25,12 @@
             </a>
         </div>
 
-        <div class="flex items-center justify-center gap-4 mb-4">
-            <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="Logo" class="h-16">
-            <h2 class="text-xl font-bold font-serif">Photographer Login</h2>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 sm:h-16">
+            <h2 class="text-lg sm:text-xl font-bold font-serif text-center sm:text-left">Photographer Login</h2>
         </div>
 
-        <p class="text-sm text-gray-700 text-center -mt-5 mb-7">
+        <p class="text-sm text-gray-700 text-center mt-0 sm:-mt-5 mb-6 sm:mb-7">
             Welcome back!<br>Enter your credentials to access your account
         </p>
 
@@ -41,31 +42,31 @@
             @csrf
             <label class="block text-sm font-medium">Email address</label>
             <input type="email" name="email" placeholder="Enter Email"
-                   class="w-full px-4 py-2 mt-1 mb-4 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
+                   class="w-full px-4 py-3 sm:py-2 mt-1 mb-4 border rounded-md focus:outline-none focus:ring focus:ring-gray-300 text-base" required>
 
             <label class="block text-sm font-medium">Password</label>
             <input type="password" name="password" placeholder="Enter Password"
-                   class="w-full px-4 py-2 mt-1 mb-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
+                   class="w-full px-4 py-3 sm:py-2 mt-1 mb-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300 text-base" required>
 
-            <a href="{{ route('password.request', ['type' => 'photographer']) }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
+            <a href="{{ route('password.request') }}" class="text-sm text-right text-gray-600 hover:underline block mb-4">Forgot Password?</a>
 
             <button type="submit"
-                    class="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition">
+                    class="w-full bg-black text-white font-bold py-3 sm:py-2 rounded-md hover:bg-gray-800 transition">
                 LOGIN
             </button>
         </form>
 
         <div class="text-center text-gray-500 my-4">Or</div>
 
-        <a href="{{ url('/auth/google') }}"
-           class="flex items-center justify-center border border-gray-300 rounded-md py-2 hover:bg-gray-100 transition">
+        <a href="{{ route('auth.google') }}"
+           class="flex items-center justify-center border border-gray-300 rounded-md py-3 sm:py-2 hover:bg-gray-100 transition">
             <img src="https://img.icons8.com/color/48/000000/google-logo.png" class="h-5 mr-2" />
             Sign in with Google
         </a>
 
         <div class="text-center text-sm mt-5">
-            Don’t have an account?
-            <a href="{{ route('register') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
+            Don't have an account?
+            <a href="{{ route('photographer.registration.form') }}" class="text-red-600 font-semibold hover:underline">Join now!</a>
         </div>
     </div>
 

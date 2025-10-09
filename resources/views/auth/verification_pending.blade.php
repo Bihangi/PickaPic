@@ -11,7 +11,7 @@
     </style>
 </head>
 <body class="bg-cover bg-center min-h-screen flex items-center justify-center p-4 sm:p-6"
-      style="background-image: url('{{ Vite::asset('resources/images/image.png') }}');">
+      style="background-image: url('{{ asset('images/image.png') }}');">
 
     <div class="bg-white p-8 rounded-2xl w-full max-w-md shadow-lg text-center">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Verification Request Sent!</h2>

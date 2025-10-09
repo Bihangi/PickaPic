@@ -17,11 +17,20 @@ class AuthenticatedSessionController extends Controller
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            $user = Auth::user();
+
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'photographer') {
+                return redirect()->route('photographer.dashboard.index');
+            } else {
+                return redirect()->route('client.dashboard');
+            }
         }
 
-        return view('dashboard');
+        return redirect()->route('choose.role');
     }
+
 
 
     /**
