@@ -24,18 +24,10 @@
                         <span id="message-badge" class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </a>
                     
-                    {{-- Notifications Button --}}
-                    <button class="relative p-2 hover:bg-white/20 rounded-lg transition-colors">
-                        <i class="fas fa-bell text-xl"></i>
-                        @if($stats['pending_bookings'] > 0)
-                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ $stats['pending_bookings'] }}</span>
-                        @endif
-                    </button>
-                    
                     {{-- Profile Dropdown --}}
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
-                        @if($photographer->profile_image && file_exists(public_path('images/' . $photographer->profile_image)))
+                    <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        @if($photographer->profile_image)
                             <img src="{{ asset('images/' . $photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
                         @else
                             <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-700 flex items-center justify-center">
@@ -130,7 +122,7 @@
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="gradient-bg p-6 text-white text-center">
                         <div class="relative inline-block">
-                            @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
+                            @if($photographer->profile_image)
                                 <img src="{{ asset('images/'.$photographer->profile_image) }}" alt="Profile" class="w-20 h-20 rounded-full border-4 border-white mx-auto object-cover">
                             @else
                                 <div class="w-20 h-20 rounded-full border-4 border-white mx-auto bg-gray-700 flex items-center justify-center">
