@@ -35,13 +35,13 @@
                     {{-- Profile Dropdown --}}
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-3 p-2 hover:bg-white/20 rounded-lg transition-colors">
-                            @if($photographer->profile_image && Storage::disk('public')->exists($photographer->profile_image))
-                                <img src="{{ asset('images/'.$photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
-                            @else
-                                <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-700 flex items-center justify-center">
-                                    <span class="text-white font-bold">{{ substr($photographer->user->name, 0, 1) }}</span>
-                                </div>
-                            @endif
+                        @if($photographer->profile_image && file_exists(public_path('images/' . $photographer->profile_image)))
+                            <img src="{{ asset('images/' . $photographer->profile_image) }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                        @else
+                            <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-700 flex items-center justify-center">
+                                <span class="text-white font-bold">{{ substr($photographer->user->name, 0, 1) }}</span>
+                            </div>
+                        @endif
                             <span class="font-medium">{{ $photographer->user->name }}</span>
                             <i class="fas fa-chevron-down text-sm"></i>
                         </button>

@@ -46,6 +46,9 @@
                 <input type="password" name="password" placeholder="Create a Password"
                     class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
 
+                <input type="password" name="password_confirmation" placeholder="Confirm Password"
+                    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-gray-300" required>
+
                 <button type="submit"
                         class="w-full bg-black text-white font-bold py-2 rounded-md hover:bg-gray-800 transition">
                     Join
