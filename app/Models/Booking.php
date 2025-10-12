@@ -77,6 +77,10 @@ class Booking extends Model
         return $query->where('user_id', $userId);
     }
 
+    public function client() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    
     public function isPending(): bool
     {
         return $this->status === 'pending';

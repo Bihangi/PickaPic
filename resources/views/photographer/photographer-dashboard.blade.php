@@ -229,12 +229,12 @@
                                             <div class="flex-1">
                                                 <div class="flex items-center mb-2">
                                                     <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3">
-                                                        <span class="text-white font-semibold">{{ substr($booking->client_name ?? ($booking->user->name ?? 'Client'), 0, 1) }}</span>
+                                                        <span class="text-white font-semibold">{{ substr($booking->client_name ?? ($booking->client->name ?? 'Client'), 0, 1) }}</span>
                                                     </div>
                                                     <div>
-                                                        <h4 class="font-semibold text-gray-800">{{ $booking->client_name ?? $booking->user->name ?? 'Client Name Not Available' }}</h4>
+                                                        <h4 class="font-semibold text-gray-800">{{ $booking->client_name ?? $booking->client->name ?? 'Client Name Not Available' }}</h4>
                                                         <p class="text-gray-600 text-sm">
-                                                            {{ $booking->client_location ?? ($booking->user->location ?? 'Location not specified') }}
+                                                            {{ $booking->client_location ?? ($booking->client->location ?? 'Location not specified') }}
                                                         </p>
                                                     </div>
                                                 </div>
